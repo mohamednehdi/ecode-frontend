@@ -12,11 +12,11 @@ export class LoginComponent {
 
   imagePath: string = 'assets/signin-image.jpg';
   loginForm: FormGroup;
-  // username: string = '';
-  // password: string = '';
 
 
-  constructor(private router: Router,
+
+  constructor(
+    private router: Router,
     private formBuilder: FormBuilder,
     private authService: AuthService) {
       this.loginForm = this.formBuilder.group({
@@ -26,13 +26,7 @@ export class LoginComponent {
     );
      }
 
-  // login() {
-  //   this.authService.login(this.username, this.password).subscribe(response => {
-  //     console.log('Login successful:', response);
-  //   }, error => {
-  //     console.log('Login failed:', error);
-  //   });
-  // }
+
 
 
 

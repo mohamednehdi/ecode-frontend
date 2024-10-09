@@ -14,6 +14,11 @@ import { SignupComponent } from './components/signup/signup.component';
 import { AuthService } from './services/auth.service';
 import { FormsModule } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
+import { RequestResetPasswordComponent } from './components/request-reset-password/request-reset-password.component';
+import { VerifyCodeComponent } from './components/verify-code/verify-code.component';
+import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+
 
 
 @NgModule({
@@ -23,14 +28,18 @@ import { ReactiveFormsModule } from '@angular/forms';
     UploadHeaderComponent,
     UploadHandlerComponent,
     LoginComponent,
-    SignupComponent
+    SignupComponent,
+    RequestResetPasswordComponent,
+    VerifyCodeComponent,
+    ResetPasswordComponent
   ],
   imports: [
     
     BrowserModule,
     AppRoutingModule,
     FormsModule,
-    ReactiveFormsModule 
+    ReactiveFormsModule ,
+    MatSnackBarModule
     
 
 

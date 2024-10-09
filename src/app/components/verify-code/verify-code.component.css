@@ -1,0 +1,112 @@
+/* Make the container smaller */
+.container {
+    width: 500px;  /* Reduced width */
+    height: 300px;
+    background: #fff;
+    margin: 0 auto;
+    padding: 50px 10px 0px;
+    box-shadow: 0 15px 16.83px .17px rgba(0,0,0,.05);
+    border-radius: 20px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* Keep background padding */
+.main {
+    background: #f8f8f8;
+    padding: 1000px 0;
+}
+
+/* Smaller form title */
+.form-title {
+    line-height: 1.66;
+    font-weight: 700;
+    color: #222;
+    font-family: 'Poppins', sans-serif;
+    font-size: 27px; /* Reduced font size */
+    margin-left: 40px;
+    padding-bottom: 10px;
+}
+
+/* Adjust form group margins and sizes */
+.form-group {
+    position: relative;
+    display: flex;  /* Align icon and input vertically */
+    align-items: center;
+    margin-bottom: 20px;
+    width: 80%;  /* Make input fields smaller */
+    margin-left: auto;
+    margin-right: auto;
+    padding-right: 10px;  /* Add space between icon and input */
+}
+
+/* Icon styles */
+.form-group i {
+    font-size: 18px; /* Adjust icon size */
+    
+    padding-right: 1px;  /* Add space between icon and input */
+}
+
+/* Smaller input fields */
+input {
+    
+    width: 100%;
+    display: block;
+    border: none;
+    border-bottom: 1px solid #999;
+    padding: 6px 10px; /* Reduced padding */
+    font-family: 'Poppins', sans-serif;
+    box-sizing: border-box;
+}
+
+/* Placeholder color */
+input::placeholder {
+    color: #999;
+}
+
+/* Focus effect on input fields */
+input:focus {
+    border-bottom: 1px solid #222;
+}
+
+/* Button alignment */
+.form-button {
+    text-align: left;
+}
+
+/* Submit button styling */
+.form-submit {
+    display: inline-block;
+    background: #6dabe4;
+    color: #fff;
+    border-bottom: none;
+    width: auto;
+    padding: 15px 28px; /* Smaller button padding */
+    border-radius: 5px;
+    margin-top: 15px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.form-submit:hover {
+    background: #4292dc;
+}
+
+/* Error message style */
+.text-danger {
+    color: red;
+    font-size: 12px;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 768px) {
+    .container {
+        width: calc(100% - 30px);
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+}

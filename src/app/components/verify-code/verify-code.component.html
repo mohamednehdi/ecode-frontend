@@ -1,0 +1,27 @@
+<body>
+  <div class="main">
+    <section class="verify-code">
+      <div class="container">
+        <div class="verify-code-content">
+          <div class="verify-code-form">
+            <h2 class="form-title">Verify Code</h2>
+            <form [formGroup]="verifyForm" (ngSubmit)="onSubmit()" class="verify-code-form">
+              <div class="form-group">
+                <label for="code"><i class="mdi mdi-shield-check"></i></label>
+                <input
+                  type="text"
+                  id="code"
+                  formControlName="code"
+                  placeholder="Enter the verification code"
+                />
+              </div>
+              <div class="form-group form-button">
+                <input type="submit" class="form-submit" [disabled]="verifyForm.invalid" value="Verify" />
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
