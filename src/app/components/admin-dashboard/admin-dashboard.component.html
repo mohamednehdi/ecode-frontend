@@ -1,0 +1,15 @@
+<!-- <nav>
+  <a routerLink="users">Users</a>
+  <a routerLink="waiting-for-acceptance">Waiting for Acceptance</a>
+</nav>
+<router-outlet></router-outlet> -->
+
+<div class="sidebar" [class.active]="isSidebarOpen">
+  <button class="close-btn" (click)="toggleSidebar()">
+    <fa-icon [icon]="['fas', 'times']"></fa-icon>
+  </button>
+  <nav>
+    <a routerLink="/users" (click)="toggleSidebar()">Users</a>
+    <a routerLink="/waiting-for-acceptance" (click)="toggleSidebar()">Waiting for Acceptance</a>
+  </nav>
+</div>

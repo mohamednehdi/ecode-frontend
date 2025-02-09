@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
+
 
 @Component({
   selector: 'app-upload',
@@ -11,7 +13,8 @@ export class UploadComponent {
   processedImage: string | ArrayBuffer | null = null;
   barcodes: { type: string, data: string }[] = [];
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient,private router: Router) { }
+  
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -33,4 +36,20 @@ export class UploadComponent {
         });
     }
   }
+
+  
+  logout(): void {
+    // Clear session or token
+    localStorage.clear(); // or sessionStorage.clear(); if you use sessionStorage
+    // Redirect to login page
+    this.router.navigate(['/login']);
+  }
+
+  // ngOnInit(): void {
+  //   // Prevent back navigation after logout
+  //   history.pushState(null, '', location.href);
+  //   window.onpopstate = () => {
+  //     history.pushState(null, '', location.href);
+  //   };
+  // }
 }

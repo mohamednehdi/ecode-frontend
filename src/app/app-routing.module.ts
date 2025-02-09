@@ -8,6 +8,14 @@ import { SignupComponent } from './components/signup/signup.component';
 import { RequestResetPasswordComponent } from './components/request-reset-password/request-reset-password.component';
 import { VerifyCodeComponent } from './components/verify-code/verify-code.component';
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
+
+import { AdminGuard } from './services/admin.guard';
+import { authGuard } from './services/auth.guard';
+import { AdminDashboardComponent } from './components/admin-dashboard/admin-dashboard.component';
+import { WaitingForAcceptanceComponent } from './components/waiting-for-acceptance/waiting-for-acceptance.component';
+import { UsersComponent } from './components/users/users.component';
+
+
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   {path:'upload',component: UploadComponent},
@@ -18,6 +26,16 @@ const routes: Routes = [
   {path:'request-reset-password',component:RequestResetPasswordComponent},
   {path:'verify-code',component:VerifyCodeComponent},
   {path: 'reset-password', component: ResetPasswordComponent },
+  { path: '', redirectTo: '/login', pathMatch: 'full' },
+  { path: 'dashboard', component: AdminDashboardComponent, children: [
+    { path: 'users', component: UsersComponent },
+    { path: 'waiting-for-acceptance', component: WaitingForAcceptanceComponent }
+  ]},
+  { path: '', redirectTo: '/dashboard/users', pathMatch: 'full' }, // Default route
+  { path: '**', redirectTo: '/dashboard/users' }, // Wildcard route
+  { path: '**', redirectTo: '/login' } // Catch-all for invalid routes
+  
+
   
 
 ];

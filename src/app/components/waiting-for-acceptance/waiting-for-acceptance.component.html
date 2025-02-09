@@ -1,0 +1,56 @@
+<!-- <h2>Gestion des utilisateurs</h2>
+<table>
+  <tr>
+    <th>Email</th>
+    <th>Statut</th>
+    <th>Actions</th>
+  </tr>
+  <tr *ngFor="let user of users">
+    <td>{{ user.email }}</td>
+    <td>{{ user.is_active ? 'Actif' : 'En attente' }}</td>
+    <td>
+      <button (click)="approveUser(user.id)" *ngIf="!user.is_active">✔️ Accepter</button>
+      <button (click)="rejectUser(user.id)">❌ Supprimer</button>
+    </td>
+  </tr>
+</table> -->
+
+<div class="container-container">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="upload-header mt-4 p-5 bg-secondary text-white rounded text-center">
+                <h1>Gestion des utilisateurs</h1>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-12 p-4">
+          <table class="table table-bordered text-white">
+            <thead>
+              <tr>
+                <th>Email</th>
+                <th>Statut</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let user of users">
+                <td>{{ user.email }}</td>
+                <td>{{ user.is_active ? 'Actif' : 'En attente' }}</td>
+                <td>
+                  <button class="btn btn-success" (click)="approveUser(user.id)" *ngIf="!user.is_active">✔️ Accepter</button>
+                  <button class="btn btn-danger" (click)="rejectUser(user.id)">❌ Supprimer</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <!-- Add the logout button here -->
+      <button id="logout-btn" class="logout-btn" (click)="logout()">Logout</button>
+    </div>
+  </div>
+  

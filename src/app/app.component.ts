@@ -16,4 +16,10 @@ export class AppComponent {
     this.barcodes = data.barcodes;
     this.fileUploaded = true; // Set state to true to show the upload-handler component
   }
+  isSidebarOpen = false;
+
+  toggleSidebar() {
+    this.isSidebarOpen = !this.isSidebarOpen;
+  }
+  
 }

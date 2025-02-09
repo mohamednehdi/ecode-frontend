@@ -18,6 +18,17 @@ import { RequestResetPasswordComponent } from './components/request-reset-passwo
 import { VerifyCodeComponent } from './components/verify-code/verify-code.component';
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { AdminDashboardComponent } from './components/admin-dashboard/admin-dashboard.component';
+import { WaitingForAcceptanceComponent } from './components/waiting-for-acceptance/waiting-for-acceptance.component';
+import { RouterModule } from '@angular/router';
+import { UsersComponent } from './components/users/users.component';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatListModule } from '@angular/material/list';
+import { MatIconModule } from '@angular/material/icon';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
 
 
 
@@ -31,7 +42,10 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     SignupComponent,
     RequestResetPasswordComponent,
     VerifyCodeComponent,
-    ResetPasswordComponent
+    ResetPasswordComponent,
+    AdminDashboardComponent,
+    WaitingForAcceptanceComponent,
+    UsersComponent
   ],
   imports: [
     
@@ -39,7 +53,14 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     AppRoutingModule,
     FormsModule,
     ReactiveFormsModule ,
-    MatSnackBarModule
+    MatSnackBarModule,
+    BrowserAnimationsModule,
+    RouterModule,
+    MatSidenavModule,
+    MatListModule,
+    MatIconModule,
+    FontAwesomeModule
+    
     
 
 
@@ -51,4 +72,8 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule { 
+  constructor() {
+    library.add(faBars, faTimes); // Add the icons you need
+  }
+}

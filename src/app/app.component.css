@@ -6,3 +6,22 @@
     max-width: 600px; /* Optional: Restrict max width of content */
   }
   
+  .hamburger-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1001;
+  }
+  
+  .content {
+    margin-left: 0;
+    transition: margin-left 0.3s ease;
+  }
+  
+  .content.sidebar-open {
+    margin-left: 250px;
+  }
