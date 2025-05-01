@@ -20,6 +20,8 @@ throw new Error('Method not implemented.');
  
   ngOnInit(): void {
     this.loadUsers(); // Load users when the component initializes
+    console.log('UsersComponent initialized');
+
   }
 
   loadUsers(): void {

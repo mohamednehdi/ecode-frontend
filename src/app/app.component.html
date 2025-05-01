@@ -1,12 +1,6 @@
-<!-- Hamburger button to toggle the sidebar -->
-<button class="hamburger-btn" (click)="toggleSidebar()">
-    <fa-icon [icon]="['fas', 'bars']"></fa-icon>
-  </button>
-  
-  <!-- Sidebar component -->
-  <app-admin-dashboard></app-admin-dashboard>
-  
-  <!-- Main content area with router-outlet -->
-  <div class="content" [class.sidebar-open]="isSidebarOpen">
-    <router-outlet></router-outlet>
-  </div>
+<div *ngIf="showSidebar">
+  <app-sidebar></app-sidebar>
+</div>
+<div class="content">
+  <router-outlet></router-outlet>
+</div>

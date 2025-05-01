@@ -7,7 +7,7 @@ import { map } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class FileUploadService {
-  private uploadUrl = 'http://localhost:5001/upload';
+  private uploadUrl = 'http://localhost:5000/api/upload'; // Replace with your actual upload URL
 
   constructor(private http: HttpClient) {}
 

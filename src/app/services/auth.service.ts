@@ -20,15 +20,15 @@ export class AuthService {
   login(email: string, password: string): Observable<HttpResponse<any>> {
     return this.http.post<any>(`${this.baseUrl}/login`, { email, password }, { observe: 'response' });
   }
-  // login(email: string, password: string): Observable<any> {
-  //   return this.http.post<any>(`${this.baseUrl}/login`, { email, password }).pipe(
-  //     tap(response => {
-  //       if (response.access_token) {
-  //         localStorage.setItem('token', response.access_token); // Store token
-  //       }
-  //     })
-  //   );
-  // }
+// login(credentials: {email: string, password: string}) {
+//   return this.http.post('http://localhost:5000/auth/login', credentials, {
+//     headers: new HttpHeaders({
+//       'Content-Type': 'application/json'
+//     }),
+//     withCredentials: true
+//   });
+// }
+
   
 
   requestResetPassword(email: string): Observable<any> {

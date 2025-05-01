@@ -1,0 +1,18 @@
+<!-- Hamburger Menu Button -->
+<!-- Hamburger button -->
+<button class="hamburger-btn" *ngIf="!isSidebarOpen" (click)="toggleSidebar()" aria-label="Open Sidebar">
+  <fa-icon [icon]="faBars"></fa-icon>
+</button>
+
+<!-- Sidebar -->
+<div class="sidebar" [class.active]="isSidebarOpen">
+  <button class="close-btn" (click)="toggleSidebar()" aria-label="Close Sidebar">
+    <fa-icon [icon]="faTimes"></fa-icon>
+  </button>
+
+  <!-- Navigation Links -->
+  <nav>
+    <a routerLink="/dashboard/users" (click)="toggleSidebar()">Users</a>
+    <a routerLink="/dashboard/waiting-for-acceptance" (click)="toggleSidebar()">Waiting for Acceptance</a>
+  </nav>
+</div>

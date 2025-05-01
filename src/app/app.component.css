@@ -5,23 +5,14 @@
   .container {
     max-width: 600px; /* Optional: Restrict max width of content */
   }
-  
-  .hamburger-btn {
-    background: none;
-    border: none;
-    font-size: 24px;
-    cursor: pointer;
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    z-index: 1001;
-  }
-  
+
   .content {
-    margin-left: 0;
-    transition: margin-left 0.3s ease;
+    margin-left: 250px; /* Adjust this if your sidebar width changes */
+    padding: 20px;
+    transition: margin-left 0.3s ease; /* Smooth transition */
   }
   
-  .content.sidebar-open {
-    margin-left: 250px;
+  .sidebar.active + .content {
+    margin-left: 0;
   }
+  

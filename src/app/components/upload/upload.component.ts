@@ -29,7 +29,7 @@ export class UploadComponent {
       const formData = new FormData();
       formData.append('file', file);
 
-      this.http.post<{ image: string, barcodes: { type: string, data: string }[] }>('http://localhost:5001/upload', formData)
+      this.http.post<{ image: string, barcodes: { type: string, data: string }[] }>('http://localhost:5000/api/upload', formData)
         .subscribe(response => {
           this.processedImage = 'data:image/jpeg;base64,' + response.image;
           this.barcodes = response.barcodes;

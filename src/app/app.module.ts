@@ -29,6 +29,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { SidebarComponent } from './components/sidebar/sidebar.component';
 
 
 
@@ -45,7 +46,8 @@ import { faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
     ResetPasswordComponent,
     AdminDashboardComponent,
     WaitingForAcceptanceComponent,
-    UsersComponent
+    UsersComponent,
+    SidebarComponent
   ],
   imports: [
     

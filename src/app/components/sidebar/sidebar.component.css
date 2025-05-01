@@ -1,0 +1,92 @@
+/* Sidebar container */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: -250px; /* Initially hidden off-screen */
+    width: 250px;
+    height: 100%;
+    background-color: #333;
+    color: white;
+    overflow: hidden;
+    transition: left 0.3s ease; /* Smooth slide-in effect */
+    padding: 20px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column; /* Stack elements vertically */
+}
+
+.sidebar.active {
+    left: 0; /* Slide in */
+}
+
+/* Positioning the text lower */
+.sidebar nav {
+    margin-top: 50px; /* Adjust this value to position lower */
+  } 
+
+.sidebar nav a {
+    display: block;
+    padding: 10px 15px;
+    color: white;
+    text-decoration: none;
+}
+
+.sidebar nav a:hover {
+    background-color: #444;
+}
+
+/* Hamburger button */
+.hamburger-btn {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    z-index: 2001;
+}
+
+.hamburger-btn:focus {
+    outline: none;
+}
+
+.hamburger-btn {
+    color: black; /* Change to a color visible against the white background */
+    font-size: 24px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+}
+
+.hamburger-btn:hover {
+    color: gray; /* Optional hover effect */
+}
+
+/* Close button */
+.close-btn {
+    position: absolute;
+    top: 10px; /* Adjust for padding */
+    right: 10px; /* Adjust for padding */
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.close-btn:hover {
+    color: gray; /* Optional hover effect */
+}
+
+/* Anchor styles */
+a {
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+
+/*********************************************/
+/*********************************************/
+
