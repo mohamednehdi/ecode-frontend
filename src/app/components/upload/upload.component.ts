@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 
 
@@ -29,11 +29,22 @@ export class UploadComponent {
       const formData = new FormData();
       formData.append('file', file);
 
-      this.http.post<{ image: string, barcodes: { type: string, data: string }[] }>('http://localhost:5000/api/upload', formData)
-        .subscribe(response => {
-          this.processedImage = 'data:image/jpeg;base64,' + response.image;
-          this.barcodes = response.barcodes;
-        });
+
+      // ✅ Get token from localStorage
+      const token = localStorage.getItem('token');
+      const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+      this.http.post('http://localhost:5000/api/upload', formData, { headers,withCredentials:true }).subscribe({
+        next: (res: any) => {
+          console.log('Upload success:', res);
+          this.processedImage = 'data:image/jpeg;base64,' + res.image;
+          this.barcodes = res.barcodes;
+        },
+        error: (err) => {
+          console.error('Upload failed:', err);
+        }
+      });
+    
     }
   }
 

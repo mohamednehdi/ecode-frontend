@@ -7,7 +7,8 @@ import { map } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class FileUploadService {
-  private uploadUrl = 'http://localhost:5000/api/upload'; // Replace with your actual upload URL
+  private baseUrl = 'http://localhost:5000/api/'; // Replace with your actual upload URL
+  // private uploadUrl = 'http://localhost:5001/upload'; // Replace with your actual upload URL
 
   constructor(private http: HttpClient) {}
 
@@ -15,7 +16,7 @@ export class FileUploadService {
     const formData: FormData = new FormData();
     formData.append('file', file, file.name);
 
-    return this.http.post<any>(this.uploadUrl, formData).pipe(
+    return this.http.post<any>(`${this.baseUrl}/upload`, formData).pipe(
       map(response => {
         return {
           image: 'data:image/jpeg;base64,' + response.image,
@@ -24,4 +25,6 @@ export class FileUploadService {
       })
     );
   }
+
+  
 }

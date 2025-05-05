@@ -9,7 +9,7 @@ export class AuthService {
   
   
 
-  private baseUrl = 'http://localhost:5000';
+  private baseUrl = 'http://localhost:5000/auth';
 
   constructor(private http: HttpClient) { }
 
@@ -20,14 +20,8 @@ export class AuthService {
   login(email: string, password: string): Observable<HttpResponse<any>> {
     return this.http.post<any>(`${this.baseUrl}/login`, { email, password }, { observe: 'response' });
   }
-// login(credentials: {email: string, password: string}) {
-//   return this.http.post('http://localhost:5000/auth/login', credentials, {
-//     headers: new HttpHeaders({
-//       'Content-Type': 'application/json'
-//     }),
-//     withCredentials: true
-//   });
-// }
+  
+
 
   
 

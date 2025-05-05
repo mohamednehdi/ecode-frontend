@@ -36,6 +36,10 @@ export class LoginComponent {
         if (response.status === 200 && response.body.access_token) {
           const token = response.body.access_token;
           localStorage.setItem('token', token);  // Store token in local storage
+          console.log('Token:', token);
+
+          // const testToken = this.authService.getToken(); // Retrieve the token from local storage
+          // console.log('Test Token:', testToken); // Log the retrieved token
   
 
           const userRole = response.body.role;
