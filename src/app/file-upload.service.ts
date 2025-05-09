@@ -25,6 +25,17 @@ export class FileUploadService {
       })
     );
   }
-
+  getHistory(): Observable<any> {
+    let token = '';
+    if (typeof window !== 'undefined' && localStorage.getItem('token')) {
+      token = localStorage.getItem('token')!;
+    }
+  
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+  
+    return this.http.get(`${this.baseUrl}/history`, { headers });
+  }
   
 }

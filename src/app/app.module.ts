@@ -30,6 +30,8 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
+import { UploadHistoryComponent } from './components/upload-history/upload-history.component';
+import { UploadHistoryDetailComponent } from './components/upload-history-detail/upload-history-detail.component';
 
 
 
@@ -47,7 +49,9 @@ import { SidebarComponent } from './components/sidebar/sidebar.component';
     AdminDashboardComponent,
     WaitingForAcceptanceComponent,
     UsersComponent,
-    SidebarComponent
+    SidebarComponent,
+    UploadHistoryComponent,
+    UploadHistoryDetailComponent
   ],
   imports: [
     

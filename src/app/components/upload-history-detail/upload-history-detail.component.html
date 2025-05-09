@@ -1,0 +1,12 @@
+<div *ngIf="barcode" class="detail-container">
+    <h2>Barcode Details</h2>
+    <p><strong>Type:</strong> {{ barcode.type }}</p>
+    <p><strong>Time:</strong> {{ barcode.time | date: 'full' }}</p>
+    <p><strong>Extracted Data:</strong></p>
+    <pre>{{ barcode.data }}</pre>
+    <div class="barcode-image">
+      <img *ngIf="barcode.image" [src]="'data:image/jpeg;base64,' + barcode.image" alt="Barcode Image">
+    </div>
+    <button (click)="goBack()">Back</button>
+  </div>
+  

@@ -14,7 +14,8 @@ import { authGuard } from './services/auth.guard';
 import { AdminDashboardComponent } from './components/admin-dashboard/admin-dashboard.component';
 import { WaitingForAcceptanceComponent } from './components/waiting-for-acceptance/waiting-for-acceptance.component';
 import { UsersComponent } from './components/users/users.component';
-
+import { UploadHistoryComponent } from './components/upload-history/upload-history.component';
+import { UploadHistoryDetailComponent } from './components/upload-history-detail/upload-history-detail.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -26,6 +27,9 @@ const routes: Routes = [
   {path:'request-reset-password',component:RequestResetPasswordComponent},
   {path:'verify-code',component:VerifyCodeComponent},
   {path: 'reset-password', component: ResetPasswordComponent },
+  {path:'history',component: UploadHistoryComponent},
+  {path:'history-detail',component: UploadHistoryDetailComponent},
+
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: 'dashboard', component: AdminDashboardComponent, children: [
     { path: 'users', component: UsersComponent },
@@ -33,7 +37,7 @@ const routes: Routes = [
   ]},
   { path: '', redirectTo: '/dashboard/users', pathMatch: 'full' }, // Default route
   { path: '**', redirectTo: '/dashboard/users' }, // Wildcard route
-  { path: '**', redirectTo: '/login' } // Catch-all for invalid routes
+  { path: '**', redirectTo: '/login' } ,// Catch-all for invalid routes
   
 
   

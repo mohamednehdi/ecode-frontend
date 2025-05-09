@@ -1,0 +1,27 @@
+<div *ngIf="history && history.length > 0; else noHistory">
+    <table class="history-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Type</th>
+          <th>Time</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of history; let i = index">
+          <td>{{ i + 1 }}</td>
+          <td>{{ item.type }}</td>
+          <td>{{ item.time | date: 'short' }}</td>
+          <td>
+            <button (click)="viewDetails(item)">View Details</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  
+  <ng-template #noHistory>
+    <p>No barcode history found.</p>
+  </ng-template>
+  
