@@ -10,6 +10,7 @@ export class AuthService {
   
 
   private baseUrl = 'http://localhost:5000/auth';
+  private adminUrl = 'http://localhost:5000/admin';
 
   constructor(private http: HttpClient) { }
 
@@ -41,7 +42,7 @@ export class AuthService {
   }
   
   getUsers(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseUrl}/users`);
+    return this.http.get<any[]>(`${this.adminUrl}/users`);
   }
 
   getUser() {
@@ -53,7 +54,7 @@ export class AuthService {
     const token = this.getToken();
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
   
-    return this.http.get<any[]>(`${this.baseUrl}/users`, { headers });
+    return this.http.get<any[]>(`${this.adminUrl}/users`, { headers });
   }
   
   getToken(): string | null {
@@ -63,16 +64,16 @@ export class AuthService {
     const token = this.getToken();
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
   
-    return this.http.get<any[]>(`${this.baseUrl}/active-users`, { headers });
+    return this.http.get<any[]>(`${this.adminUrl}/active-users`, { headers });
   }
   approveUser(user_id: number): Observable<any> {
     const token = this.getToken();
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    return this.http.post(`${this.baseUrl}/approve-user/${user_id}`, {},{headers});
+    return this.http.post(`${this.adminUrl}/approve-user/${user_id}`, {},{headers});
   }
   deleteUser(user_id: number): Observable<any> {
     const token = this.getToken();
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    return this.http.delete(`${this.baseUrl}/delete-user/${user_id}`,{headers});
+    return this.http.delete(`${this.adminUrl}/delete-user/${user_id}`,{headers});
   }
 }

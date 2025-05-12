@@ -3,6 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
 import { faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { SidebarService } from '../../services/sidebar.service';
+import { Router } from '@angular/router';
+
 @Component({
   selector: 'app-admin-dashboard',
   templateUrl: './admin-dashboard.component.html',
@@ -12,7 +14,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy{
 
   faTimes = faTimes; // Close icon
   faBars = faBars; 
-  constructor(private sidebarService: SidebarService) {}
+  constructor(private sidebarService: SidebarService, private router :Router) {}
   ngOnInit(): void {
     this.sidebarService.setSidebarVisibility(true);
   }
@@ -21,9 +23,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy{
     this.sidebarService.setSidebarVisibility(false);
   }
 
-logout() {
-throw new Error('Method not implemented.');
-}
+
 isSidebarOpen = false;
 
 toggleSidebar() {

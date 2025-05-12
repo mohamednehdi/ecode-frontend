@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-users',
@@ -8,14 +9,13 @@ import { AuthService } from '../../services/auth.service';
   styleUrl: './users.component.css'
 })
 export class UsersComponent {
-logout() {
-throw new Error('Method not implemented.');
-}
+
   users: any[] = []; // Declare users as an array
   
 
   constructor(private http: HttpClient,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router, // Inject the Router service
   ) {}
  
   ngOnInit(): void {
@@ -58,5 +58,11 @@ throw new Error('Method not implemented.');
       }
     );
   }
+
+  logout() {
+    // Clear session or token
+    localStorage.clear(); // or sessionStorage.clear(); if you use sessionStorage
+    // Redirect to login page
+    this.router.navigate(['/login']);}
 }
 
