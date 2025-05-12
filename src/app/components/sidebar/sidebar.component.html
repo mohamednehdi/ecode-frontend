@@ -1,5 +1,4 @@
 <!-- Hamburger Menu Button -->
-<!-- Hamburger button -->
 <button class="hamburger-btn" *ngIf="!isSidebarOpen" (click)="toggleSidebar()" aria-label="Open Sidebar">
   <fa-icon [icon]="faBars"></fa-icon>
 </button>
@@ -12,7 +11,14 @@
 
   <!-- Navigation Links -->
   <nav>
-    <a routerLink="/dashboard/users" (click)="toggleSidebar()">Users</a>
-    <a routerLink="/dashboard/waiting-for-acceptance" (click)="toggleSidebar()">Waiting for Acceptance</a>
+    <ng-container *ngIf="isAdmin; else userLinks">
+      <a routerLink="/dashboard/users" (click)="toggleSidebar()">Users</a>
+      <a routerLink="/dashboard/waiting-for-acceptance" (click)="toggleSidebar()">Waiting for Acceptance</a>
+    </ng-container>
+
+    <ng-template #userLinks>
+      <a routerLink="/upload" (click)="toggleSidebar()">Upload</a>
+      <a routerLink="/history" (click)="toggleSidebar()">Upload History</a>
+    </ng-template>
   </nav>
 </div>

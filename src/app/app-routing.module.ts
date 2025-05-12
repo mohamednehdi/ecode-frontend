@@ -27,8 +27,8 @@ const routes: Routes = [
   {path:'request-reset-password',component:RequestResetPasswordComponent},
   {path:'verify-code',component:VerifyCodeComponent},
   {path: 'reset-password', component: ResetPasswordComponent },
-  {path:'history',component: UploadHistoryComponent},
   {path:'history-detail',component: UploadHistoryDetailComponent},
+  {path:'history',component: UploadHistoryComponent},
 
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: 'dashboard', component: AdminDashboardComponent, children: [

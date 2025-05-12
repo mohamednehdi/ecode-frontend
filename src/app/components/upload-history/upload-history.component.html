@@ -1,4 +1,6 @@
-<div *ngIf="history && history.length > 0; else noHistory">
+<div class="page-wrapper">
+  <div class="history-container" *ngIf="history && history.length > 0; else noHistory">
+    <h2>Upload History</h2>
     <table class="history-table">
       <thead>
         <tr>
@@ -14,14 +16,18 @@
           <td>{{ item.type }}</td>
           <td>{{ item.time | date: 'short' }}</td>
           <td>
-            <button (click)="viewDetails(item)">View Details</button>
+            <button class="view-btn" (click)="viewDetails(item)">View Details</button>
           </td>
         </tr>
       </tbody>
     </table>
   </div>
-  
-  <ng-template #noHistory>
-    <p>No barcode history found.</p>
-  </ng-template>
-  
+</div>
+
+<ng-template #noHistory>
+  <div class="page-wrapper">
+    <div class="no-history">
+      <p>No barcode history found.</p>
+    </div>
+  </div>
+</ng-template>
