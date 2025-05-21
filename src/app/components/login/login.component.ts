@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, AbstractControl, FormControl } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
+import { UserService } from '../../services/user.service';
 
 @Component({
   selector: 'app-login',
@@ -15,6 +16,7 @@ export class LoginComponent {
 
   constructor(
     private router: Router,
+    private userService: UserService,
     private formBuilder: FormBuilder,
     private authService: AuthService) {
       this.loginForm = this.formBuilder.group({
@@ -53,7 +55,7 @@ export class LoginComponent {
           } else {
             this.router.navigate(['/upload']);  // Redirect to the normal user page
           }
-  
+          this.userService.loadUserInfo();
           console.log('Login successful', 200);
         }
       }, error => {

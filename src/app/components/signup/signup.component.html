@@ -6,10 +6,16 @@
                     <div class="signup-form">
                         <h2 class="form-title">Sign up</h2>
                         <form  class="register-form" id="register-form" [formGroup]="signupForm" (ngSubmit)="onSubmit()"[autocomplete]="false">
-                            <!-- <div class="form-group">
-                                <label for="name"><i class="mdi mdi-account material-icons-name"></i></label>
-                                <input type="text" name="name" id="name" placeholder="Your Name" formControlName="name">
-                            </div> -->
+                            
+                            <div class="form-group">
+                                <label for="first_name"><i class="mdi mdi-account"></i></label>
+                                <input type="text" name="first_name" id="first_name" placeholder="First Name" formControlName="first_name">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="last_name"><i class="mdi mdi-account"></i></label>
+                                <input type="text" name="last_name" id="last_name" placeholder="Last Name" formControlName="last_name">
+                            </div>
                             <div class="form-group">
                                 <label for="email"><i class="mdi mdi-email"></i></label>
                                 <input type="email" name="email" id="email" placeholder="Your Email" formControlName="email">

@@ -1,6 +1,68 @@
-<div *ngIf="showSidebar">
-  <app-sidebar></app-sidebar>
+<!-- Show layout only if not on /login or /register -->
+<div *ngIf="showLayout">
+  <!-- Top Bar -->
+  <header class="top-bar">
+    <div class="top-bar-left">
+      <!-- ✅ Hamburger next to logo -->
+      <div class="logo">
+        <img src="assets/logo_progress_white1.png" alt="Company Logo" />
+      </div>      
+      <button class="hamburger-btn" (click)="toggleSidebar()" aria-label="Toggle Sidebar">
+        <fa-icon [icon]="faBars"></fa-icon>
+      </button>
+
+    </div>
+    <div class="user-info" (click)="toggleDropdown()" #dropdown>
+      <span>{{ username }}</span>
+      <mat-icon>account_circle</mat-icon>
+      <mat-icon>arrow_drop_down</mat-icon>
+
+
+        <!-- Dropdown menu -->
+      <div class="dropdown-menu" *ngIf="dropdownOpen">
+        <mat-icon>logout</mat-icon>
+        <button (click)="logout()">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Layout -->
+  <div class="layout">
+    <!-- Sidebar (no close button, no auto-collapse) -->
+    <aside class="sidebar" [class.collapsed]="isSidebarCollapsed">
+      <nav>
+        <ng-container *ngIf="isAdmin; else userLinks">
+          <a routerLink="/dashboard/users">
+            <mat-icon>people</mat-icon>
+            Users
+          </a>
+          <a routerLink="/dashboard/waiting-for-acceptance">
+            <mat-icon>hourglass_full</mat-icon>
+            Waiting for Acceptance
+          </a>
+        </ng-container>
+
+        <ng-template #userLinks>
+          <a routerLink="/upload">
+            <mat-icon>upload</mat-icon>
+            Upload
+          </a>
+          <a routerLink="/history">
+            <mat-icon>history</mat-icon>
+            Upload History
+          </a>
+        </ng-template>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
 </div>
-<div class="content">
+
+<!-- Login/Register Layout -->
+<div *ngIf="!showLayout">
   <router-outlet></router-outlet>
 </div>

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
+import { UserService } from './user.service';
 
 @Injectable({
   providedIn: 'root'
@@ -12,14 +13,26 @@ export class AuthService {
   private baseUrl = 'http://localhost:5000/auth';
   private adminUrl = 'http://localhost:5000/admin';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private userService: UserService) { }
 
-  register(email: string, password: string): Observable<HttpResponse<any>> {
-    return this.http.post(`${this.baseUrl}/register`, { email, password }, { observe: 'response' });
+  register(first_name:string , last_name:string ,email: string, password: string): Observable<HttpResponse<any>> {
+    return this.http.post(`${this.baseUrl}/register`, { first_name, last_name, email, password }, { observe: 'response' });
   }
 
   login(email: string, password: string): Observable<HttpResponse<any>> {
-    return this.http.post<any>(`${this.baseUrl}/login`, { email, password }, { observe: 'response' });
+    return this.http.post<any>(`${this.baseUrl}/login`, { email, password }, { observe: 'response' })
+      .pipe(
+        tap(response => {
+          const user = response.body.user;
+          const token = response.body.token;
+
+          localStorage.setItem('user', JSON.stringify(user));
+          localStorage.setItem('token', token);
+
+          this.userService.setUser(user);
+        })
+      );
+     
   }
   
 
