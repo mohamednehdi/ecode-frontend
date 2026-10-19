@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { FormBuilder, FormGroup, Validators, AbstractControl, FormControl } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { UserService } from '../../services/user.service';
 
@@ -13,6 +13,7 @@ export class LoginComponent {
 
   imagePath: string = 'assets/signin-image.jpg';
   loginForm: FormGroup;
+  errorMessage = '';
 
   constructor(
     private router: Router,
@@ -21,57 +22,36 @@ export class LoginComponent {
     private authService: AuthService) {
       this.loginForm = this.formBuilder.group({
         email: new FormControl('', [Validators.required, Validators.email]),
-        password: new FormControl('', [Validators.required, Validators.minLength(3)]),
+        password: new FormControl('', [Validators.required]),
       });
   }
 
   onSubmit() {
-    const user = this.loginForm.value;
-  
-    const email: string = user.email?.toString() ?? '';
-    const password: string = user.password?.toString() ?? '';
-  
-    if (email && password) {
-      this.authService.login(email, password).subscribe(response => {
-        console.log('Full response:', response.body);  // Log the full response to see its structure
-  
-        if (response.status === 200 && response.body.access_token) {
-          const token = response.body.access_token;
-          localStorage.setItem('token', token);  // Store token in local storage
-          console.log('Token:', token);
+    this.errorMessage = '';
+    const email: string = this.loginForm.value.email?.toString() ?? '';
+    const password: string = this.loginForm.value.password?.toString() ?? '';
 
-          // const testToken = this.authService.getToken(); // Retrieve the token from local storage
-          // console.log('Test Token:', testToken); // Log the retrieved token
-  
-
-          const userRole = response.body.role;
-          localStorage.setItem('user', JSON.stringify({ role: userRole })); // Store user data
-          
-          console.log('User Role:', userRole);
-  
-          // Check the role and redirect accordingly
-          if (userRole === 'admin') {
-            this.router.navigate(['/admin']);  // Redirect to the admin page if the user is an admin
-          } else {
-            this.router.navigate(['/upload']);  // Redirect to the normal user page
-          }
-          this.userService.loadUserInfo();
-          console.log('Login successful', 200);
-        }
-      }, error => {
-        if (error.status === 401) {
-          console.log('Login failed', 401);
-        } else {
-          console.log('An error occurred:', error);
-        }
-      });
-    } else {
-      console.log('Login failed: Email or password is missing.');
+    if (!email || !password) {
+      this.errorMessage = 'Veuillez saisir votre email et votre mot de passe.';
+      return;
     }
+
+    this.authService.login(email, password).subscribe({
+      next: response => {
+        const { access_token, role } = response.body;
+        this.authService.saveSession(access_token, role);
+        this.userService.loadUserInfo();
+        this.router.navigate([role === 'admin' ? '/dashboard/users' : '/upload']);
+      },
+      error: error => {
+        if (error.status === 401) {
+          this.errorMessage = 'Email ou mot de passe incorrect.';
+        } else if (error.status === 403) {
+          this.errorMessage = error.error?.message || 'Compte en attente de validation par un administrateur.';
+        } else {
+          this.errorMessage = 'Serveur injoignable, réessayez plus tard.';
+        }
+      }
+    });
   }
-  
 }
-
-
-
-

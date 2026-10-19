@@ -15,7 +15,11 @@
         <label for="file-upload" class="custom-file-upload">
           <i class="fa fa-cloud-upload"></i> Choose File
         </label>
-        <input id="file-upload" type="file" class="file-input" (change)="onFileSelected($event)">
+        <input id="file-upload" type="file" class="file-input" accept=".png,.jpg,.jpeg,image/png,image/jpeg" (change)="onFileSelected($event)">
+      </div>
+      <div class="col-md-12 text-center" *ngIf="loading">Analyse en cours…</div>
+      <div class="col-md-12 text-center" *ngIf="errorMessage">
+        <p class="form-error">{{ errorMessage }}</p>
       </div>
       <div class="col-md-6 mb-4" *ngIf="uploadedImage">
         <h3>Uploaded Image:</h3>

@@ -6,7 +6,7 @@ import { filter } from 'rxjs/operators';
 import { faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { isPlatformBrowser } from '@angular/common';
 import { UserService } from './services/user.service'; // Add this
-import { HttpClient, HttpHeaders } from '@angular/common/http'; // Add this
+import { AuthService } from './services/auth.service';
 
 
 
@@ -28,7 +28,7 @@ export class AppComponent implements OnInit {
  
 
 
-  constructor(private router: Router, @Inject(PLATFORM_ID) private platformId: any,private userService: UserService, private http:HttpClient) {}
+  constructor(private router: Router, @Inject(PLATFORM_ID) private platformId: any, private userService: UserService, private authService: AuthService) {}
 
 
 
@@ -53,23 +53,8 @@ closeDropdown() {
 }
 
 logout() {
-  // ✅ Get token from localStorage
-  const token = localStorage.getItem('token'); // adjust the key if needed
-  const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-
-  this.http.post('http://localhost:5000/auth/logout', {}, { headers, withCredentials: true }).subscribe({
-    next: () => {
-      localStorage.removeItem('token'); // adjust if you're storing a user object instead
-      this.router.navigate(['/login']);
-      console.log('Logout successful');
-      
-    },
-    error: (err) => {
-      console.error('Logout failed:', err);
-      localStorage.removeItem('token');
-      this.router.navigate(['/login']);
-    }
-  });
+  // Revokes the token on the server and clears the local session
+  this.authService.logout();
 }
 
   
@@ -78,17 +63,13 @@ ngOnInit() {
     this.router.events
       .pipe(filter((event: Event): event is NavigationEnd => event instanceof NavigationEnd)) // ✅ Type guard
       .subscribe((event: NavigationEnd) => {
-        const authRoutes = ['/login', '/signup'];
+        const authRoutes = ['/login', '/signup', '/request-reset-password', '/verify-code', '/reset-password'];
         this.showLayout = !authRoutes.includes(event.urlAfterRedirects);
       });
 
     // Listen to user role and name changes
     this.userService.isAdmin$.subscribe(val => this.isAdmin = val);
-    this.userService.username$.subscribe(name => {
-      this.username = name;
-      console.log('Username:', this.username);  // <-- Add this to debug
-
-    });
+    this.userService.username$.subscribe(name => this.username = name);
 
     // Call to load user info after login or app start
     this.userService.loadUserInfo();    
@@ -102,4 +83,4 @@ ngOnInit() {
   }
 }
 
- 
+ 

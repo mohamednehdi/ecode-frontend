@@ -6,7 +6,7 @@
                     <div class="signin-image">
                         <figure><img [src]="imagePath" alt="sing up image">
                         </figure>
-                        <a href="http://localhost:4200/signup" class="signup-image-link">Create an account</a>
+                        <a routerLink="/signup" class="signup-image-link">Create an account</a>
                     </div>
                     <div class="signin-form">
                         <h2 class="form-title">Login</h2>
@@ -26,6 +26,7 @@
                                     Forgot your password?
                                 </a>
                             </div>
+                            <p class="form-error" *ngIf="errorMessage">{{ errorMessage }}</p>
                             <div class="form-group form-button">
                                 <input  type="submit" name="signin" id="signin" class="form-submit"
                                     value="Log in" />
@@ -37,4 +38,4 @@
             </div>
         </section>
     </div>
-</body>
+</body>

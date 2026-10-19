@@ -1,92 +1,84 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { HttpClient, HttpResponse } from '@angular/common/http';
+import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
+import { finalize } from 'rxjs/operators';
 import { UserService } from './user.service';
+import { API_URL } from '../api.config';
 
+// The Authorization header is added automatically by authInterceptor.
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  
-  
 
-  private baseUrl = 'http://localhost:5000/auth';
-  private adminUrl = 'http://localhost:5000/admin';
+  private baseUrl = `${API_URL}/auth`;
+  private adminUrl = `${API_URL}/admin`;
 
-  constructor(private http: HttpClient, private userService: UserService) { }
+  constructor(private http: HttpClient, private userService: UserService, private router: Router) { }
 
-  register(first_name:string , last_name:string ,email: string, password: string): Observable<HttpResponse<any>> {
+  register(first_name: string, last_name: string, email: string, password: string): Observable<HttpResponse<any>> {
     return this.http.post(`${this.baseUrl}/register`, { first_name, last_name, email, password }, { observe: 'response' });
   }
 
   login(email: string, password: string): Observable<HttpResponse<any>> {
-    return this.http.post<any>(`${this.baseUrl}/login`, { email, password }, { observe: 'response' })
-      .pipe(
-        tap(response => {
-          const user = response.body.user;
-          const token = response.body.token;
-
-          localStorage.setItem('user', JSON.stringify(user));
-          localStorage.setItem('token', token);
-
-          this.userService.setUser(user);
-        })
-      );
-     
+    return this.http.post<any>(`${this.baseUrl}/login`, { email, password }, { observe: 'response' });
   }
-  
 
+  /** Saves the session after a successful login. */
+  saveSession(token: string, role: string): void {
+    localStorage.setItem('token', token);
+    localStorage.setItem('user', JSON.stringify({ role }));
+    this.userService.setUser({ role });
+  }
 
-  
+  /** Revokes the token on the server, then clears the local session. */
+  logout(): void {
+    this.http.post(`${this.baseUrl}/logout`, {}).pipe(
+      finalize(() => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        this.userService.clearUser();
+        this.router.navigate(['/login']);
+      })
+    ).subscribe({ error: () => { /* token already invalid: nothing to revoke */ } });
+  }
 
   requestResetPassword(email: string): Observable<any> {
-    const url = `${this.baseUrl}/request-password-reset`;
-    return this.http.post<any>(url, { email });
+    return this.http.post<any>(`${this.baseUrl}/request-password-reset`, { email });
   }
 
+  /** On success the response contains `reset_token`, needed by resetPassword(). */
   verifyCode(token: string, code: string): Observable<any> {
-    const url = `${this.baseUrl}/verify-code`;
-    return this.http.post(url, { token, code });
+    return this.http.post<any>(`${this.baseUrl}/verify-code`, { token, code });
   }
 
-  resetPassword(token: string, password: string): Observable<any> {
-    const url = `${this.baseUrl}/reset-password`;
-    return this.http.post(url, { token, password });
-  }
-  
-  getUsers(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.adminUrl}/users`);
+  resetPassword(resetToken: string, password: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/reset-password`, { token: resetToken, password });
   }
 
   getUser() {
-  const userData = localStorage.getItem('user');
-  return userData ? JSON.parse(userData) : null;
+    const userData = localStorage.getItem('user');
+    return userData ? JSON.parse(userData) : null;
   }
-  
-  getPendingUsers(): Observable<any[]> {
-    const token = this.getToken();
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-  
-    return this.http.get<any[]>(`${this.adminUrl}/users`, { headers });
-  }
-  
+
   getToken(): string | null {
-    return localStorage.getItem('token'); // Assuming token is stored in localStorage after login
+    return localStorage.getItem('token');
   }
-  getActiveUsers():Observable<any[]>  {
-    const token = this.getToken();
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-  
-    return this.http.get<any[]>(`${this.adminUrl}/active-users`, { headers });
+
+  getPendingUsers(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.adminUrl}/users`);
   }
+
+  getActiveUsers(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.adminUrl}/active-users`);
+  }
+
   approveUser(user_id: number): Observable<any> {
-    const token = this.getToken();
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    return this.http.post(`${this.adminUrl}/approve-user/${user_id}`, {},{headers});
+    return this.http.post(`${this.adminUrl}/approve-user/${user_id}`, {});
   }
+
   deleteUser(user_id: number): Observable<any> {
-    const token = this.getToken();
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    return this.http.delete(`${this.adminUrl}/delete-user/${user_id}`,{headers});
+    return this.http.delete(`${this.adminUrl}/delete-user/${user_id}`);
   }
 }

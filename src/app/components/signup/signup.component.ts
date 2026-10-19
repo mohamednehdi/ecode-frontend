@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
 import { Router } from '@angular/router';
-import { FormBuilder, FormGroup , Validators, AbstractControl, FormControl } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 
 
@@ -13,7 +13,8 @@ import { AuthService } from '../../services/auth.service';
 export class SignupComponent {
   imagePath: string = 'assets/signup-image.jpg';
   signupForm: FormGroup;
-
+  errorMessage = '';
+  successMessage = '';
 
   constructor(
     private router: Router,
@@ -24,38 +25,36 @@ export class SignupComponent {
       first_name: ['', [Validators.required]],
       last_name: ['', [Validators.required]],
       email: new FormControl('', [Validators.required, Validators.email]),
-      password: new FormControl('', [Validators.required, Validators.minLength(3)]),
-      re_pass: new FormControl('', [Validators.required, Validators.minLength(3)]),
-      //agree_term: new FormControl(false, [Validators.requiredTrue])
+      password: new FormControl('', [Validators.required, Validators.minLength(8)]),
+      re_pass: new FormControl('', [Validators.required]),
     });
   }
 
-
-onSubmit() {
-      if (this.signupForm.valid) {
-        const { first_name, last_name, email, password, re_pass } = this.signupForm.value;
-        
-        if (password !== re_pass) {
-          console.log('Passwords do not match');
-          return;
-        }
-  
-        this.authService.register(first_name , last_name, email, password).subscribe(
-          response => {
-            console.log('Registration successful', response);
-            this.router.navigate(['/login']);
-          },
-          error => {
-            if (error.status === 400) {
-              console.log('User already exists');
-            } else {
-              console.log('An error occurred:', error);
-            }
-          }
-        );
-      } else {
-        console.log('Form is invalid');
-      }
+  onSubmit() {
+    this.errorMessage = '';
+    if (this.signupForm.invalid) {
+      this.errorMessage = 'Remplissez tous les champs (mot de passe : 8 caractères minimum).';
+      return;
     }
-  
+
+    const { first_name, last_name, email, password, re_pass } = this.signupForm.value;
+    if (password !== re_pass) {
+      this.errorMessage = 'Les mots de passe ne correspondent pas.';
+      return;
+    }
+
+    this.authService.register(first_name, last_name, email, password).subscribe({
+      next: () => {
+        this.successMessage = 'Compte créé ! Un administrateur doit le valider avant votre première connexion.';
+        setTimeout(() => this.router.navigate(['/login']), 3000);
+      },
+      error: error => {
+        if (error.status === 400 && error.error?.message === 'User already exists') {
+          this.errorMessage = 'Un compte existe déjà avec cet email.';
+        } else {
+          this.errorMessage = error.error?.message || 'Serveur injoignable, réessayez plus tard.';
+        }
+      }
+    });
+  }
 }

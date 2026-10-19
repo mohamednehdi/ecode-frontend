@@ -1,8 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { UploadComponent } from './components/upload/upload.component';
-import { UploadHeaderComponent } from './upload-header/upload-header.component';
-import { UploadHandlerComponent } from './upload-handler/upload-handler.component';
 import { LoginComponent } from './components/login/login.component';
 import { SignupComponent } from './components/signup/signup.component';
 import { RequestResetPasswordComponent } from './components/request-reset-password/request-reset-password.component';
@@ -19,29 +17,30 @@ import { UploadHistoryDetailComponent } from './components/upload-history-detail
 
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
-  {path:'upload',component: UploadComponent},
-  {path:'upload-header',component: UploadHeaderComponent},
-  {path:'upload-handler',component:UploadHandlerComponent},
-  {path:'login',component:LoginComponent},
-  {path:'signup',component:SignupComponent},
-  {path:'request-reset-password',component:RequestResetPasswordComponent},
-  {path:'verify-code',component:VerifyCodeComponent},
-  {path: 'reset-password', component: ResetPasswordComponent },
-  {path:'history-detail',component: UploadHistoryDetailComponent},
-  {path:'history',component: UploadHistoryComponent},
 
-  { path: '', redirectTo: '/login', pathMatch: 'full' },
-  { path: 'dashboard', component: AdminDashboardComponent, children: [
-    { path: 'users', component: UsersComponent },
-    { path: 'waiting-for-acceptance', component: WaitingForAcceptanceComponent }
-  ]},
-  { path: '', redirectTo: '/dashboard/users', pathMatch: 'full' }, // Default route
-  { path: '**', redirectTo: '/dashboard/users' }, // Wildcard route
-  { path: '**', redirectTo: '/login' } ,// Catch-all for invalid routes
-  
+  // Public pages
+  { path: 'login', component: LoginComponent },
+  { path: 'signup', component: SignupComponent },
+  { path: 'request-reset-password', component: RequestResetPasswordComponent },
+  { path: 'verify-code', component: VerifyCodeComponent },
+  { path: 'reset-password', component: ResetPasswordComponent },
 
-  
+  // Logged-in users
+  { path: 'upload', component: UploadComponent, canActivate: [authGuard] },
+  { path: 'history', component: UploadHistoryComponent, canActivate: [authGuard] },
+  { path: 'history-detail', component: UploadHistoryDetailComponent, canActivate: [authGuard] },
 
+  // Admins
+  {
+    path: 'dashboard', component: AdminDashboardComponent, canActivate: [AdminGuard], children: [
+      { path: '', redirectTo: 'users', pathMatch: 'full' },
+      { path: 'users', component: UsersComponent },
+      { path: 'waiting-for-acceptance', component: WaitingForAcceptanceComponent }
+    ]
+  },
+
+  // Anything else
+  { path: '**', redirectTo: '/login' },
 ];
 
 @NgModule({

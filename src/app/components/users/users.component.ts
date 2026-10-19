@@ -1,68 +1,46 @@
-import { HttpClient } from '@angular/common/http';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-users',
   templateUrl: './users.component.html',
   styleUrl: './users.component.css'
 })
-export class UsersComponent {
+export class UsersComponent implements OnInit {
 
-  users: any[] = []; // Declare users as an array
-  
+  users: any[] = [];
 
-  constructor(private http: HttpClient,
-    private authService: AuthService,
-    private router: Router, // Inject the Router service
-  ) {}
- 
+  constructor(private authService: AuthService) {}
+
   ngOnInit(): void {
-    this.loadUsers(); // Load users when the component initializes
-    console.log('UsersComponent initialized');
-
+    this.loadUsers();
   }
 
   loadUsers(): void {
-    this.authService.getActiveUsers().subscribe(
-      (data) => {
-        this.users = data;
-      },
-      (error) => {
-        console.error('Erreur lors du chargement des utilisateurs', error);
-      }
-    );
+    this.authService.getActiveUsers().subscribe({
+      next: data => this.users = data,
+      error: error => console.error('Erreur lors du chargement des utilisateurs', error)
+    });
   }
 
   approveUser(userId: number): void {
-    this.http.post(`/api/users/approve/${userId}`, {}).subscribe(
-      () => {
-        this.users = this.users.map(user =>
-          user.id === userId ? { ...user, is_active: true } : user
-        );
+    this.authService.approveUser(userId).subscribe({
+      next: () => {
+        this.users = this.users.map(user => user.id === userId ? { ...user, is_active: true } : user);
       },
-      (error) => {
-        console.error("Erreur lors de l'approbation de l'utilisateur", error);
-      }
-    );
+      error: error => console.error("Erreur lors de l'approbation de l'utilisateur", error)
+    });
   }
 
-  rejectUser(user_id: number): void {
-    this.authService.deleteUser(user_id).subscribe(
-      () => {
-        this.users = this.users.filter(user => user.id !== user_id);
-      },
-      (error) => {
-        console.error("Erreur lors de la suppression de l'utilisateur", error);
-      }
-    );
+  rejectUser(userId: number): void {
+    if (!confirm('Supprimer cet utilisateur et tout son historique ?')) return;
+    this.authService.deleteUser(userId).subscribe({
+      next: () => this.users = this.users.filter(user => user.id !== userId),
+      error: error => console.error("Erreur lors de la suppression de l'utilisateur", error)
+    });
   }
 
   logout() {
-    // Clear session or token
-    localStorage.clear(); // or sessionStorage.clear(); if you use sessionStorage
-    // Redirect to login page
-    this.router.navigate(['/login']);}
+    this.authService.logout();
+  }
 }
-

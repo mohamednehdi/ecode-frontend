@@ -1,0 +1,18 @@
+/* Form feedback messages (used by login, signup, password reset and upload pages) */
+.form-error {
+  color: #c62828;
+  background: #fdecea;
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin: 8px 0;
+  font-size: 14px;
+}
+
+.form-success {
+  color: #1b5e20;
+  background: #e8f5e9;
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin: 8px 0;
+  font-size: 14px;
+}

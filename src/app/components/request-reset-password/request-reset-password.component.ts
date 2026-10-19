@@ -12,9 +12,11 @@ import { SharedService } from '../../services/shared.service';
 export class RequestResetPasswordComponent {
 
   resetForm: FormGroup;
+  errorMessage = '';
+  loading = false;
 
   constructor(private router: Router,
-    private fb: FormBuilder, 
+    private fb: FormBuilder,
     private authService: AuthService,
     private sharedService: SharedService) {
     this.resetForm = this.fb.group({
@@ -23,19 +25,19 @@ export class RequestResetPasswordComponent {
   }
 
   onSubmit() {
-    const email = this.resetForm.value.email;
-    this.authService.requestResetPassword(email).subscribe(
-      response => {
-        // Store the email in the shared service
+    this.errorMessage = '';
+    this.loading = true;
+    this.authService.requestResetPassword(this.resetForm.value.email).subscribe({
+      next: response => {
+        this.loading = false;
+        // "verify" token: only allows submitting the emailed code
         this.sharedService.setToken(response.token);
-        console.log('Email sent successfully', 200);
-        // Navigate to verify code component
         this.router.navigate(['/verify-code']);
       },
-      error => {
-        // Handle error
-        console.error('Error requesting password reset', error);
+      error: error => {
+        this.loading = false;
+        this.errorMessage = error.error?.error || 'Serveur injoignable, réessayez plus tard.';
       }
-    );
+    });
   }
 }

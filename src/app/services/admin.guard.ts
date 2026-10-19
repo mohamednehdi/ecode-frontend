@@ -1,19 +1,24 @@
-import { inject } from '@angular/core';
-import { CanActivateFn } from '@angular/router';
-import { AuthService } from './auth.service';
-import { Router } from '@angular/router';
+import { inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { CanActivateFn, Router } from '@angular/router';
 
+// Hides admin pages from non-admins. The real protection is on the backend
+// (@admin_required), this guard only improves navigation.
 export const AdminGuard: CanActivateFn = (route, state) => {
-  const authService = inject(AuthService);
+  const platformId = inject(PLATFORM_ID);
   const router = inject(Router);
 
-  const userData = localStorage.getItem('user'); // Get user data from local storage
-  const user = userData ? JSON.parse(userData) : null; // Parse JSON if exists
-  if (user && user.role === 'admin') {
-    return true; // Allow access to the route
+  // localStorage doesn't exist during server-side rendering
+  if (!isPlatformBrowser(platformId)) {
+    return false;
   }
 
-  // If the user is not an admin, redirect them to the login page or any other page
+  const userData = localStorage.getItem('user');
+  const user = userData ? JSON.parse(userData) : null;
+  if (localStorage.getItem('token') && user?.role === 'admin') {
+    return true;
+  }
+
   router.navigate(['/login']);
   return false;
 };

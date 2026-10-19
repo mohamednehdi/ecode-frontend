@@ -1,59 +1,63 @@
-import { Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
-import { isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
 import { SharedService } from '../../services/shared.service';
+
 @Component({
   selector: 'app-verify-code',
   templateUrl: './verify-code.component.html',
   styleUrl: './verify-code.component.css'
 })
-export class VerifyCodeComponent {
+export class VerifyCodeComponent implements OnInit {
 
   verifyForm: FormGroup;
   token: string | null = null;
-
+  errorMessage = '';
+  mustRestart = false;  // true when the code is burned or the link expired
 
   constructor(
     private fb: FormBuilder,
-    private authService: AuthService, 
-    private router :Router,
-    private sharedService :SharedService
-    ) {
+    private authService: AuthService,
+    private router: Router,
+    private sharedService: SharedService
+  ) {
     this.verifyForm = this.fb.group({
-      code: ['', [Validators.required]]
+      code: ['', [Validators.required, Validators.pattern(/^\d{6}$/)]]
     });
   }
 
   ngOnInit() {
-    // Retrieve the email from the shared service
     this.token = this.sharedService.getToken();
     if (!this.token) {
-      // If no email is found, navigate back to request reset password component
       this.router.navigate(['/request-reset-password']);
-      console.log(this.token);
     }
   }
 
   onSubmit() {
-    const code = this.verifyForm.value.code;
-    if (this.token) {
-      this.authService.verifyCode(this.token, code).subscribe(
-        response => {
-          // Navigate to reset password component
-          console.log(this.token);
-          console.log('Verification code is valid', 200);
-          console.log(code);
-          this.router.navigate(['/reset-password']);
+    if (!this.token) return;
+    this.errorMessage = '';
 
-        },
-        error => {
-          // Handle error
-          
-          console.error('Error verifying code', error);
+    this.authService.verifyCode(this.token, this.verifyForm.value.code).subscribe({
+      next: response => {
+        // Replace the "verify" token with the "reset" token: only it allows changing the password
+        this.sharedService.setToken(response.reset_token);
+        this.router.navigate(['/reset-password']);
+      },
+      error: error => {
+        const body = error.error || {};
+        if (body.attempts_left !== undefined && body.attempts_left > 0) {
+          this.errorMessage = `Code incorrect. Il vous reste ${body.attempts_left} tentative(s).`;
+        } else {
+          this.errorMessage = body.error || 'Code invalide ou expiré.';
+          this.mustRestart = true;
         }
-      );
-    }
+      }
+    });
+  }
+
+  restart() {
+    this.sharedService.clearToken();
+    this.router.navigate(['/request-reset-password']);
   }
 }

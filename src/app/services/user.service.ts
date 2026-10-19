@@ -1,14 +1,8 @@
 import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { BehaviorSubject } from 'rxjs';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-
-interface UserInfo {
-  email: string;
-  firstname: string;
-  lastname: string;
-  role: string;
-}
+import { HttpClient } from '@angular/common/http';
+import { API_URL } from '../api.config';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
@@ -20,7 +14,7 @@ export class UserService {
 
   private isBrowser: boolean;
 
-  constructor(@Inject(PLATFORM_ID) platformId: Object,private http: HttpClient) {
+  constructor(@Inject(PLATFORM_ID) platformId: Object, private http: HttpClient) {
     this.isBrowser = isPlatformBrowser(platformId);
 
     if (this.isBrowser) {
@@ -30,10 +24,8 @@ export class UserService {
   }
 
   setUser(user: any) {
-    const isAdmin = user?.role === 'admin';
-    const username = user?.username || '';
-    this.isAdminSubject.next(isAdmin);
-    this.usernameSubject.next(username);
+    this.isAdminSubject.next(user?.role === 'admin');
+    this.usernameSubject.next(user?.username || '');
   }
 
   clearUser() {
@@ -41,20 +33,16 @@ export class UserService {
     this.usernameSubject.next('');
   }
 
-loadUserInfo() {
-  const token = localStorage.getItem('token');
-  if (!token) return;
+  loadUserInfo() {
+    if (!this.isBrowser || !localStorage.getItem('token')) return;
 
-  const headers = new HttpHeaders({
-    'Authorization': `Bearer ${token}`
-  });
-
-  this.http.get('http://localhost:5000/auth/me', { headers }).subscribe((user: any) => {
-    const username = `${user.firstname} ${user.lastname}`;
-    this.usernameSubject.next(username);
-    this.isAdminSubject.next(user.role === 'admin');
-  }, error => {
-    console.error('Failed to load user info', error);
-  });
-}
+    // Authorization header is added by authInterceptor
+    this.http.get<any>(`${API_URL}/auth/me`).subscribe({
+      next: user => {
+        this.usernameSubject.next(`${user.firstname ?? ''} ${user.lastname ?? ''}`.trim());
+        this.isAdminSubject.next(user.role === 'admin');
+      },
+      error: error => console.error('Failed to load user info', error)
+    });
+  }
 }

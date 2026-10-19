@@ -12,8 +12,9 @@ import { AuthService } from '../../services/auth.service';
 })
 export class ResetPasswordComponent implements OnInit {
   resetPasswordForm: FormGroup;
-  token: string | null = null;
+  token: string | null = null;  // "reset" token received after the code was verified
   showSuccessMessage = false;
+  errorMessage = '';
 
   constructor(
     private fb: FormBuilder,
@@ -22,16 +23,14 @@ export class ResetPasswordComponent implements OnInit {
     private sharedService: SharedService
   ) {
     this.resetPasswordForm = this.fb.group({
-      password: ['', [Validators.required, Validators.minLength(6)]],
+      password: ['', [Validators.required, Validators.minLength(8)]],
       confirmPassword: ['', [Validators.required]]
-    },{ validators: this.passwordMatchValidator });
+    }, { validators: this.passwordMatchValidator });
   }
 
   ngOnInit() {
-    // Retrieve the token from the shared service
     this.token = this.sharedService.getToken();
     if (!this.token) {
-      // If no token is found, navigate back to request reset password component
       this.router.navigate(['/request-reset-password']);
     }
   }
@@ -43,22 +42,19 @@ export class ResetPasswordComponent implements OnInit {
   }
 
   onSubmit() {
-    const password = this.resetPasswordForm.value.password;
-    if (this.token) {
-      this.authService.resetPassword(this.token, password).subscribe(
-        response => {
-          // Clear the token from the shared service
-          this.sharedService.clearToken();
-          this.showSuccessMessage = true;
-          // Handle success, perhaps navigate to login page
-          setTimeout(() => this.router.navigate(['/login']), 2000);
-        },
-        error => {
-          // Handle error
-          console.error('Error resetting password', error);
-        }
-      );
-    }
+    if (!this.token) return;
+    this.errorMessage = '';
+
+    this.authService.resetPassword(this.token, this.resetPasswordForm.value.password).subscribe({
+      next: () => {
+        this.sharedService.clearToken();
+        this.showSuccessMessage = true;
+        setTimeout(() => this.router.navigate(['/login']), 2000);
+      },
+      error: error => {
+        this.errorMessage = error.error?.error || 'Erreur lors de la réinitialisation.';
+      }
+    });
   }
 
   closePopup() {
