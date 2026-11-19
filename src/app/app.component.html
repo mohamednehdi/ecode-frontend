@@ -1,68 +1,61 @@
-<!-- Show layout only if not on /login or /register -->
+<!-- Show layout only if not on the login / password reset pages -->
 <div *ngIf="showLayout">
   <!-- Top Bar -->
   <header class="top-bar">
     <div class="top-bar-left">
-      <!-- ✅ Hamburger next to logo -->
       <div class="logo">
-        <img src="assets/logo_progress_white1.png" alt="Company Logo" />
-      </div>      
-      <button class="hamburger-btn" (click)="toggleSidebar()" aria-label="Toggle Sidebar">
+        <a routerLink="/"><img src="assets/logo_progress_white1.png" alt="Company Logo" /></a>
+      </div>
+      <!-- Menu button: only useful when the admin sidebar exists -->
+      <button class="hamburger-btn" *ngIf="isAdmin" (click)="toggleSidebar()" aria-label="Toggle Sidebar">
         <fa-icon [icon]="faBars"></fa-icon>
       </button>
-
     </div>
-    <div class="user-info" (click)="toggleDropdown()" #dropdown>
+
+    <!-- Logged-in administrator -->
+    <div class="user-info" *ngIf="isAdmin" (click)="toggleDropdown()" #dropdown>
       <span>{{ username }}</span>
       <mat-icon>account_circle</mat-icon>
       <mat-icon>arrow_drop_down</mat-icon>
 
-
-        <!-- Dropdown menu -->
+      <!-- Dropdown menu -->
       <div class="dropdown-menu" *ngIf="dropdownOpen">
         <mat-icon>logout</mat-icon>
         <button (click)="logout()">Logout</button>
       </div>
     </div>
+
+    <!-- Public visitor -->
+    <a *ngIf="!isAdmin" routerLink="/login" class="admin-link">
+      <mat-icon>admin_panel_settings</mat-icon>
+      Administration
+    </a>
   </header>
 
   <!-- Main Layout -->
   <div class="layout">
-    <!-- Sidebar (no close button, no auto-collapse) -->
-    <aside class="sidebar" [class.collapsed]="isSidebarCollapsed">
+    <!-- Sidebar: administrators only -->
+    <aside class="sidebar" *ngIf="isAdmin" [class.collapsed]="isSidebarCollapsed">
       <nav>
-        <ng-container *ngIf="isAdmin; else userLinks">
-          <a routerLink="/dashboard/users">
-            <mat-icon>people</mat-icon>
-            Users
-          </a>
-          <a routerLink="/dashboard/waiting-for-acceptance">
-            <mat-icon>hourglass_full</mat-icon>
-            Waiting for Acceptance
-          </a>
-        </ng-container>
-
-        <ng-template #userLinks>
-          <a routerLink="/upload">
-            <mat-icon>upload</mat-icon>
-            Upload
-          </a>
-          <a routerLink="/history">
-            <mat-icon>history</mat-icon>
-            Upload History
-          </a>
-        </ng-template>
+        <a routerLink="/dashboard/api-tokens">
+          <mat-icon>vpn_key</mat-icon>
+          API Tokens
+        </a>
+        <a routerLink="/">
+          <mat-icon>upload</mat-icon>
+          Public upload page
+        </a>
       </nav>
     </aside>
 
     <!-- Main Content -->
-    <main class="main-content">
+    <main class="main-content" [class.no-sidebar]="!isAdmin">
       <router-outlet></router-outlet>
     </main>
   </div>
 </div>
 
-<!-- Login/Register Layout -->
+<!-- Login / password reset layout -->
 <div *ngIf="!showLayout">
   <router-outlet></router-outlet>
 </div>

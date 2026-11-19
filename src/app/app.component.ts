@@ -1,5 +1,4 @@
 import { Component, ElementRef, HostListener, Inject, OnInit, PLATFORM_ID, ViewChild } from '@angular/core';
-import { SidebarService } from './services/sidebar.service'; // adjust path
 import { Router, NavigationEnd ,Event} from '@angular/router';
 import { jwtDecode } from 'jwt-decode';
 import { filter } from 'rxjs/operators';
@@ -63,7 +62,7 @@ ngOnInit() {
     this.router.events
       .pipe(filter((event: Event): event is NavigationEnd => event instanceof NavigationEnd)) // ✅ Type guard
       .subscribe((event: NavigationEnd) => {
-        const authRoutes = ['/login', '/signup', '/request-reset-password', '/verify-code', '/reset-password'];
+        const authRoutes = ['/login', '/request-reset-password', '/verify-code', '/reset-password'];
         this.showLayout = !authRoutes.includes(event.urlAfterRedirects);
       });
 

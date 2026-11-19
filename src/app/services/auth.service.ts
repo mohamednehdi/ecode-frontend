@@ -13,13 +13,8 @@ import { API_URL } from '../api.config';
 export class AuthService {
 
   private baseUrl = `${API_URL}/auth`;
-  private adminUrl = `${API_URL}/admin`;
 
   constructor(private http: HttpClient, private userService: UserService, private router: Router) { }
-
-  register(first_name: string, last_name: string, email: string, password: string): Observable<HttpResponse<any>> {
-    return this.http.post(`${this.baseUrl}/register`, { first_name, last_name, email, password }, { observe: 'response' });
-  }
 
   login(email: string, password: string): Observable<HttpResponse<any>> {
     return this.http.post<any>(`${this.baseUrl}/login`, { email, password }, { observe: 'response' });
@@ -64,21 +59,5 @@ export class AuthService {
 
   getToken(): string | null {
     return localStorage.getItem('token');
-  }
-
-  getPendingUsers(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.adminUrl}/users`);
-  }
-
-  getActiveUsers(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.adminUrl}/active-users`);
-  }
-
-  approveUser(user_id: number): Observable<any> {
-    return this.http.post(`${this.adminUrl}/approve-user/${user_id}`, {});
-  }
-
-  deleteUser(user_id: number): Observable<any> {
-    return this.http.delete(`${this.adminUrl}/delete-user/${user_id}`);
   }
 }

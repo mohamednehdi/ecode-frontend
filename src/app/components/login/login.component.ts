@@ -41,13 +41,13 @@ export class LoginComponent {
         const { access_token, role } = response.body;
         this.authService.saveSession(access_token, role);
         this.userService.loadUserInfo();
-        this.router.navigate([role === 'admin' ? '/dashboard/users' : '/upload']);
+        this.router.navigate(['/dashboard']);
       },
       error: error => {
         if (error.status === 401) {
           this.errorMessage = 'Email ou mot de passe incorrect.';
         } else if (error.status === 403) {
-          this.errorMessage = error.error?.message || 'Compte en attente de validation par un administrateur.';
+          this.errorMessage = error.error?.message || 'Accès réservé aux administrateurs.';
         } else {
           this.errorMessage = 'Serveur injoignable, réessayez plus tard.';
         }

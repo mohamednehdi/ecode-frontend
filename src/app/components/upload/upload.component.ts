@@ -1,6 +1,5 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { SidebarService } from '../../services/sidebar.service';
 import { API_URL } from '../../api.config';
 
 const ALLOWED_TYPES = ['image/png', 'image/jpeg', 'application/pdf'];
@@ -14,7 +13,7 @@ const MAX_SIZE_MB = 10;
   templateUrl: './upload.component.html',
   styleUrl: './upload.component.css'
 })
-export class UploadComponent implements OnInit, OnDestroy {
+export class UploadComponent {
   uploadedImage: string | ArrayBuffer | null = null;
   uploadedFileName = '';
   isPdf = false;
@@ -24,15 +23,7 @@ export class UploadComponent implements OnInit, OnDestroy {
   errorMessage = '';
   loading = false;
 
-  constructor(private http: HttpClient, private sidebarService: SidebarService) { }
-
-  ngOnInit(): void {
-    this.sidebarService.setSidebarVisibility(true);
-  }
-
-  ngOnDestroy(): void {
-    this.sidebarService.setSidebarVisibility(false);
-  }
+  constructor(private http: HttpClient) { }
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -67,7 +58,7 @@ export class UploadComponent implements OnInit, OnDestroy {
     formData.append('file', file);
 
     this.loading = true;
-    this.http.post<any>(`${API_URL}/scans/upload`, formData).subscribe({
+    this.http.post<any>(`${API_URL}/public/extract`, formData).subscribe({
       next: res => {
         this.loading = false;
         this.pages = res.pages;
