@@ -95,3 +95,51 @@ li {
 }
 
 
+
+.page-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+
+.page-nav button {
+  min-width: 34px;
+  padding: 4px 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #f8f9fa;
+  color: #333;
+  cursor: pointer;
+}
+
+.page-nav button.has-codes {
+  border-color: #f6a92b;
+  font-weight: bold;
+}
+
+.page-nav button.active {
+  background-color: #0092d2;
+  border-color: #0092d2;
+  color: white;
+}
+
+.page-nav button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+li.clickable {
+  cursor: pointer;
+}
+
+.page-badge {
+  display: inline-block;
+  margin-right: 8px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background-color: #0092d2;
+  color: white;
+  font-size: 0.8em;
+}

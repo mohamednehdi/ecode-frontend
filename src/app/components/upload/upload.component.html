@@ -6,7 +6,7 @@
           <div class="col-md-12">
             <div class="upload-header mt-4 p-5 bg-secondary text-white rounded text-center">
               <h1>Image/PDF upload </h1>
-              <p>On File select with validation for JPEG and PNG only</p>
+              <p>PDF (multi-pages), JPEG ou PNG</p>
             </div>
           </div>
         </div>
@@ -15,24 +15,36 @@
         <label for="file-upload" class="custom-file-upload">
           <i class="fa fa-cloud-upload"></i> Choose File
         </label>
-        <input id="file-upload" type="file" class="file-input" accept=".png,.jpg,.jpeg,image/png,image/jpeg" (change)="onFileSelected($event)">
+        <input id="file-upload" type="file" class="file-input" accept=".pdf,.png,.jpg,.jpeg,application/pdf,image/png,image/jpeg" (change)="onFileSelected($event)">
       </div>
       <div class="col-md-12 text-center" *ngIf="loading">Analyse en cours…</div>
       <div class="col-md-12 text-center" *ngIf="errorMessage">
         <p class="form-error">{{ errorMessage }}</p>
       </div>
+      <div class="col-md-12 text-center mb-2" *ngIf="isPdf && uploadedFileName">
+        <strong>{{ uploadedFileName }}</strong>
+        <span *ngIf="pages.length"> — {{ pages.length }} page(s), {{ barcodes.length }} code(s)</span>
+      </div>
       <div class="col-md-6 mb-4" *ngIf="uploadedImage">
         <h3>Uploaded Image:</h3>
         <img class="uploaded-image" [src]="uploadedImage" alt="Uploaded Image">
       </div>
-      <div class="col-md-6 mb-4" *ngIf="processedImage">
-        <h3>Processed Image:</h3>
-        <img class="uploaded-image" [src]="processedImage" alt="Processed Image">
+      <div class="mb-4" [class.col-md-6]="!isPdf" [class.col-md-12]="isPdf" *ngIf="page">
+        <h3>Processed {{ isPdf ? 'Page' : 'Image' }}:</h3>
+        <div class="page-nav" *ngIf="pages.length > 1">
+          <button type="button" (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 0">&lsaquo;</button>
+          <button type="button" *ngFor="let p of pages; let i = index"
+                  [class.active]="i === currentPage" [class.has-codes]="p.barcodes.length"
+                  (click)="goToPage(i)">{{ p.page }}</button>
+          <button type="button" (click)="goToPage(currentPage + 1)" [disabled]="currentPage === pages.length - 1">&rsaquo;</button>
+        </div>
+        <img class="uploaded-image" [src]="'data:image/jpeg;base64,' + page.image" [alt]="'Page ' + page.page">
       </div>
       <div class="col-md-12 mb-4" *ngIf="barcodes.length">
         <h3>Detected Barcodes:</h3>
         <ul>
-          <li *ngFor="let barcode of barcodes">
+          <li *ngFor="let barcode of barcodes" (click)="goToPage(barcode.page - 1)" [class.clickable]="isPdf">
+            <span class="page-badge" *ngIf="isPdf">Page {{ barcode.page }}</span>
             {{ barcode.type }}: {{ barcode.data }}
           </li>
         </ul>

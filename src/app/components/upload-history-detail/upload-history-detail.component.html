@@ -2,6 +2,7 @@
   <div class="detail-container">
     <h2>Barcode Details</h2>
     <p><strong>Type:</strong> {{ barcode.type }}</p>
+    <p *ngIf="barcode.page"><strong>Page:</strong> {{ barcode.page }}</p>
     <p><strong>Time:</strong> {{ barcode.time | date: 'full' }}</p>
     <p><strong>Extracted Data:</strong></p>
     <pre>{{ barcode.data }}</pre>

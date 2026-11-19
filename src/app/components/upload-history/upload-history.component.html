@@ -6,6 +6,7 @@
         <tr>
           <th>#</th>
           <th>Type</th>
+          <th>Page</th>
           <th>Time</th>
           <th>Actions</th>
         </tr>
@@ -14,6 +15,7 @@
         <tr *ngFor="let item of history; let i = index">
           <td>{{ i + 1 }}</td>
           <td>{{ item.type }}</td>
+          <td>{{ item.page ?? '—' }}</td>
           <td>{{ item.time | date: 'short' }}</td>
           <td>
             <button class="view-btn" (click)="viewDetails(item)">View Details</button>

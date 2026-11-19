@@ -3,7 +3,10 @@ import { HttpClient } from '@angular/common/http';
 import { SidebarService } from '../../services/sidebar.service';
 import { API_URL } from '../../api.config';
 
-const ALLOWED_TYPES = ['image/png', 'image/jpeg'];
+const ALLOWED_TYPES = ['image/png', 'image/jpeg', 'application/pdf'];
+
+interface Barcode { page: number; type: string; data: string; }
+interface ScanPage { page: number; image: string; barcodes: Barcode[]; }
 const MAX_SIZE_MB = 10;
 
 @Component({
@@ -13,8 +16,11 @@ const MAX_SIZE_MB = 10;
 })
 export class UploadComponent implements OnInit, OnDestroy {
   uploadedImage: string | ArrayBuffer | null = null;
-  processedImage: string | ArrayBuffer | null = null;
-  barcodes: { type: string, data: string }[] = [];
+  uploadedFileName = '';
+  isPdf = false;
+  pages: ScanPage[] = [];
+  currentPage = 0;  // index in `pages`
+  barcodes: Barcode[] = [];
   errorMessage = '';
   loading = false;
 
@@ -34,12 +40,14 @@ export class UploadComponent implements OnInit, OnDestroy {
     const file = input.files[0];
 
     this.errorMessage = '';
-    this.processedImage = null;
+    this.uploadedImage = null;
+    this.pages = [];
+    this.currentPage = 0;
     this.barcodes = [];
 
     // Same checks as the backend, so the user gets an immediate message
     if (!ALLOWED_TYPES.includes(file.type)) {
-      this.errorMessage = 'Format non supporté (PNG ou JPG uniquement).';
+      this.errorMessage = 'Format non supporté (PDF, PNG ou JPG uniquement).';
       return;
     }
     if (file.size > MAX_SIZE_MB * 1024 * 1024) {
@@ -47,9 +55,13 @@ export class UploadComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = () => this.uploadedImage = reader.result;
-    reader.readAsDataURL(file);
+    this.uploadedFileName = file.name;
+    this.isPdf = file.type === 'application/pdf';
+    if (!this.isPdf) {
+      const reader = new FileReader();
+      reader.onload = () => this.uploadedImage = reader.result;
+      reader.readAsDataURL(file);
+    }
 
     const formData = new FormData();
     formData.append('file', file);
@@ -58,10 +70,15 @@ export class UploadComponent implements OnInit, OnDestroy {
     this.http.post<any>(`${API_URL}/scans/upload`, formData).subscribe({
       next: res => {
         this.loading = false;
-        this.processedImage = 'data:image/jpeg;base64,' + res.image;
+        this.pages = res.pages;
         this.barcodes = res.barcodes;
+        // Open the first page that has a barcode
+        const first = this.pages.findIndex(p => p.barcodes.length);
+        this.currentPage = first >= 0 ? first : 0;
         if (!res.barcodes.length) {
-          this.errorMessage = 'Aucun code-barres détecté dans cette image.';
+          this.errorMessage = this.isPdf
+            ? 'Aucun code-barres détecté dans ce document.'
+            : 'Aucun code-barres détecté dans cette image.';
         }
       },
       error: err => {
@@ -70,5 +87,13 @@ export class UploadComponent implements OnInit, OnDestroy {
       }
     });
     input.value = '';  // allows choosing the same file again
+  }
+
+  get page(): ScanPage | null {
+    return this.pages[this.currentPage] ?? null;
+  }
+
+  goToPage(index: number): void {
+    if (index >= 0 && index < this.pages.length) this.currentPage = index;
   }
 }
