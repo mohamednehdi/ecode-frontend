@@ -38,7 +38,7 @@
                   (click)="goToPage(i)">{{ p.page }}</button>
           <button type="button" (click)="goToPage(currentPage + 1)" [disabled]="currentPage === pages.length - 1">&rsaquo;</button>
         </div>
-        <img class="uploaded-image" [src]="'data:image/jpeg;base64,' + page.image" [alt]="'Page ' + page.page">
+        <img class="uploaded-image" [class.pdf-page]="isPdf" [src]="'data:image/jpeg;base64,' + page.image" [alt]="'Page ' + page.page">
       </div>
       <div class="col-md-12 mb-4" *ngIf="barcodes.length">
         <h3>Detected Barcodes:</h3>

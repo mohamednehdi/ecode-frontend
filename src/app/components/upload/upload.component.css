@@ -54,7 +54,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 80vh; /* Adjust this according to your needs */
+  min-height: 80vh; /* min-height: a fixed height + centering cuts off the top of tall content */
   
 }
 
@@ -142,4 +142,10 @@ li.clickable {
   background-color: #0092d2;
   color: white;
   font-size: 0.8em;
+}
+
+/* A PDF page is tall: keep it inside the screen instead of stretching to the full width */
+.uploaded-image.pdf-page {
+  max-height: 85vh;
+  width: auto;
 }
