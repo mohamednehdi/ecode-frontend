@@ -6,6 +6,7 @@ import { faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { isPlatformBrowser } from '@angular/common';
 import { UserService } from './services/user.service'; // Add this
 import { AuthService } from './services/auth.service';
+import { API_URL } from './api.config';
 
 
 
@@ -15,6 +16,9 @@ import { AuthService } from './services/auth.service';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
+  /** Interactive documentation of the web service (Swagger), served by the backend. */
+  readonly apiDocsUrl = `${API_URL}/api/docs/`;
+
 
   showLayout = true;
   isAdmin = false;
@@ -82,4 +86,4 @@ ngOnInit() {
   }
 }
 
- 
+ 
