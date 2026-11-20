@@ -15,6 +15,10 @@ import { RequestResetPasswordComponent } from './components/request-reset-passwo
 import { VerifyCodeComponent } from './components/verify-code/verify-code.component';
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 import { ApiTokensComponent } from './components/api-tokens/api-tokens.component';
+import { StatisticsComponent } from './components/statistics/statistics.component';
+import { BarChartComponent } from './components/charts/bar-chart.component';
+import { LineChartComponent } from './components/charts/line-chart.component';
+import { HBarChartComponent } from './components/charts/hbar-chart.component';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
@@ -33,7 +37,11 @@ import { faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
     RequestResetPasswordComponent,
     VerifyCodeComponent,
     ResetPasswordComponent,
-    ApiTokensComponent
+    ApiTokensComponent,
+    StatisticsComponent,
+    BarChartComponent,
+    LineChartComponent,
+    HBarChartComponent
   ],
   imports: [
     BrowserModule,

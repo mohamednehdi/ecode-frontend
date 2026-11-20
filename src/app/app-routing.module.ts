@@ -6,6 +6,7 @@ import { RequestResetPasswordComponent } from './components/request-reset-passwo
 import { VerifyCodeComponent } from './components/verify-code/verify-code.component';
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 import { ApiTokensComponent } from './components/api-tokens/api-tokens.component';
+import { StatisticsComponent } from './components/statistics/statistics.component';
 import { AdminGuard } from './services/admin.guard';
 
 const routes: Routes = [
@@ -22,7 +23,8 @@ const routes: Routes = [
   {
     path: 'dashboard', canActivate: [AdminGuard], children: [
       { path: '', redirectTo: 'api-tokens', pathMatch: 'full' },
-      { path: 'api-tokens', component: ApiTokensComponent }
+      { path: 'api-tokens', component: ApiTokensComponent },
+      { path: 'statistics', component: StatisticsComponent }
     ]
   },
 

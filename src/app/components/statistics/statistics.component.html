@@ -1,0 +1,130 @@
+<div class="stats-page">
+  <div class="page-header">
+    <div>
+      <h2>Statistiques d'utilisation</h2>
+      <p class="subtitle">Requêtes reçues par le service web <code>POST /api/v1/extract</code> (heures en temps local, jours en UTC).</p>
+    </div>
+    <div class="filters">
+      <label>Période
+        <select class="form-select" [(ngModel)]="days" (ngModelChange)="load()" name="days">
+          <option *ngFor="let p of periods" [ngValue]="p.days">{{ p.label }}</option>
+        </select>
+      </label>
+      <label>Clé API
+        <select class="form-select" [(ngModel)]="tokenId" (ngModelChange)="load()" name="token">
+          <option [ngValue]="null">Toutes les clés</option>
+          <option *ngFor="let t of tokens" [ngValue]="t.id">{{ t.name }}</option>
+        </select>
+      </label>
+      <button type="button" class="btn btn-outline-secondary" (click)="exportCsv()" [disabled]="loading || empty">Exporter en CSV</button>
+    </div>
+  </div>
+
+  <div class="form-error" *ngIf="errorMessage">{{ errorMessage }}</div>
+  <div class="loading" *ngIf="loading && !data">Chargement…</div>
+
+  <div class="empty-state" *ngIf="empty && !loading">
+    <h4>Aucune requête sur cette période</h4>
+    <p>Les statistiques apparaissent dès qu'une application appelle le service avec une clé API.</p>
+  </div>
+
+  <ng-container *ngIf="data && !empty">
+    <!-- Key figures -->
+    <div class="tiles" [class.dim]="loading">
+      <div class="tile">
+        <span class="tile-label">Requêtes</span>
+        <span class="tile-value">{{ int(data.totals.requests) }}</span>
+        <span class="tile-note">{{ int(data.totals.pages) }} page(s) analysée(s)</span>
+      </div>
+      <div class="tile" [class.tile-alert]="data.totals.error_rate >= 0.05">
+        <span class="tile-label">Taux d'erreur</span>
+        <span class="tile-value">{{ percent(data.totals.error_rate) }}</span>
+        <span class="tile-note">{{ int(data.totals.errors) }} requête(s) en échec</span>
+      </div>
+      <div class="tile">
+        <span class="tile-label">Temps moyen</span>
+        <span class="tile-value">{{ ms(data.totals.avg_ms) }}</span>
+        <span class="tile-note">médiane {{ ms(data.totals.p50_ms) }}</span>
+      </div>
+      <div class="tile">
+        <span class="tile-label">95 % des requêtes en moins de</span>
+        <span class="tile-value">{{ ms(data.totals.p95_ms) }}</span>
+        <span class="tile-note">objectif du cahier : 100 ms</span>
+      </div>
+      <div class="tile">
+        <span class="tile-label">Codes trouvés</span>
+        <span class="tile-value">{{ int(data.totals.codes_found) }}</span>
+        <span class="tile-note">{{ int(data.totals.thorough_requests) }} requête(s) en mode approfondi</span>
+      </div>
+    </div>
+
+    <div class="row g-3 mt-1">
+      <div class="col-lg-8">
+        <div class="card chart-card">
+          <h5>Requêtes par jour</h5>
+          <app-bar-chart [labels]="dayLabels" [series]="volumeSeries" noun="requêtes"
+                         [ariaLabel]="'Requêtes par jour sur ' + data.period.days + ' jours, dont les requêtes en erreur'"></app-bar-chart>
+          <details class="table-view">
+            <summary>Voir les chiffres par jour</summary>
+            <table class="table table-sm">
+              <thead><tr><th>Jour</th><th class="num">Requêtes</th><th class="num">Erreurs</th><th class="num">Temps moyen</th></tr></thead>
+              <tbody>
+                <tr *ngFor="let d of data.daily.slice().reverse()">
+                  <td>{{ d.date }}</td><td class="num">{{ int(d.requests) }}</td><td class="num">{{ int(d.errors) }}</td><td class="num">{{ ms(d.avg_ms) }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </details>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="card chart-card">
+          <h5>Requêtes par clé</h5>
+          <app-hbar-chart [rows]="tokenRows" ariaLabel="Nombre de requêtes par clé API"></app-hbar-chart>
+        </div>
+      </div>
+
+      <div class="col-lg-8">
+        <div class="card chart-card">
+          <h5>Temps de traitement moyen par jour</h5>
+          <app-line-chart [labels]="dayLabels" [values]="latencyValues" unit="ms"
+                          [reference]="data.totals.p95_ms" [referenceLabel]="'95 % en moins de ' + ms(data.totals.p95_ms)"
+                          ariaLabel="Temps moyen de traitement par jour, en millisecondes"></app-line-chart>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="card chart-card">
+          <h5>Types de fichiers</h5>
+          <app-hbar-chart [rows]="fileTypeRows" ariaLabel="Requêtes par type de fichier"></app-hbar-chart>
+          <h5 class="mt-3">Résultats</h5>
+          <app-hbar-chart [rows]="statusRows" ariaLabel="Requêtes par code de réponse"></app-hbar-chart>
+        </div>
+      </div>
+    </div>
+
+    <!-- Latest requests -->
+    <div class="card chart-card mt-3">
+      <h5>Dernières requêtes</h5>
+      <div class="table-responsive">
+        <table class="table table-sm align-middle">
+          <thead>
+            <tr><th>Heure</th><th>Clé</th><th>Résultat</th><th class="num">Durée</th><th class="num">Codes</th><th class="num">Pages</th><th>Fichier</th><th>Mode</th><th>Adresse IP</th></tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let r of recent">
+              <td>{{ utc(r.time) | date:'dd/MM HH:mm:ss' }}</td>
+              <td>{{ r.token_name }}</td>
+              <td><span class="badge" [ngClass]="statusClass(r.status)">{{ r.status ?? '?' }}</span></td>
+              <td class="num">{{ ms(r.duration_ms) }}</td>
+              <td class="num">{{ int(r.codes_found) }}</td>
+              <td class="num">{{ int(r.pages) }}</td>
+              <td>{{ r.file_type === 'pdf' ? 'PDF' : r.file_type === 'image' ? 'Image' : '–' }} · {{ size(r.file_bytes) }}</td>
+              <td>{{ r.thorough === null ? '–' : (r.thorough ? 'Approfondi' : 'Rapide') }}</td>
+              <td>{{ r.ip ?? '–' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </ng-container>
+</div>
