@@ -149,3 +149,12 @@ li.clickable {
   max-height: 85vh;
   width: auto;
 }
+
+/* Colour key of the boxes drawn on the result image */
+.legend { display: flex; flex-wrap: wrap; gap: 6px 22px; justify-content: center; font-size: 0.9rem; color: #52514e; }
+.legend-item { display: inline-flex; align-items: center; gap: 6px; }
+.swatch { width: 14px; height: 14px; border-radius: 3px; border: 2px solid; background: transparent; }
+.swatch-red { border-color: #ff0000; }
+.swatch-green { border-color: #00ff00; }
+.swatch-orange { border-color: #ff8c00; }
+.unread-note { color: #52514e; }

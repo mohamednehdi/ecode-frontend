@@ -5,7 +5,9 @@ import { API_URL } from '../../api.config';
 const ALLOWED_TYPES = ['image/png', 'image/jpeg', 'application/pdf'];
 
 interface Barcode { page: number; type: string; data: string; }
-interface ScanPage { page: number; image: string; barcodes: Barcode[]; }
+// A region that looks like a barcode but could not be read (drawn in orange on the page image)
+interface UnreadRegion { page: number; score: number; coordinates: { x: number; y: number; w: number; h: number }; }
+interface ScanPage { page: number; image: string; barcodes: Barcode[]; unread: UnreadRegion[]; }
 const MAX_SIZE_MB = 10;
 
 @Component({
@@ -20,6 +22,7 @@ export class UploadComponent {
   pages: ScanPage[] = [];
   currentPage = 0;  // index in `pages`
   barcodes: Barcode[] = [];
+  unread: UnreadRegion[] = [];
   errorMessage = '';
   loading = false;
 
@@ -35,6 +38,7 @@ export class UploadComponent {
     this.pages = [];
     this.currentPage = 0;
     this.barcodes = [];
+    this.unread = [];
 
     // Same checks as the backend, so the user gets an immediate message
     if (!ALLOWED_TYPES.includes(file.type)) {
@@ -63,10 +67,11 @@ export class UploadComponent {
         this.loading = false;
         this.pages = res.pages;
         this.barcodes = res.barcodes;
-        // Open the first page that has a barcode
-        const first = this.pages.findIndex(p => p.barcodes.length);
+        this.unread = res.unread ?? [];
+        // Open the first page that has a barcode (or, failing that, an unreadable region)
+        const first = this.pages.findIndex(p => p.barcodes.length || p.unread.length);
         this.currentPage = first >= 0 ? first : 0;
-        if (!res.barcodes.length) {
+        if (!res.barcodes.length && !this.unread.length) {
           this.errorMessage = this.isPdf
             ? 'Aucun code-barres détecté dans ce document.'
             : 'Aucun code-barres détecté dans cette image.';

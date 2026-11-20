@@ -23,7 +23,7 @@
       </div>
       <div class="col-md-12 text-center mb-2" *ngIf="isPdf && uploadedFileName">
         <strong>{{ uploadedFileName }}</strong>
-        <span *ngIf="pages.length"> — {{ pages.length }} page(s), {{ barcodes.length }} code(s)</span>
+        <span *ngIf="pages.length"> — {{ pages.length }} page(s), {{ barcodes.length }} code(s)<span *ngIf="unread.length">, {{ unread.length }} zone(s) illisible(s)</span></span>
       </div>
       <div class="col-md-6 mb-4" *ngIf="uploadedImage">
         <h3>Uploaded Image:</h3>
@@ -34,11 +34,16 @@
         <div class="page-nav" *ngIf="pages.length > 1">
           <button type="button" (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 0">&lsaquo;</button>
           <button type="button" *ngFor="let p of pages; let i = index"
-                  [class.active]="i === currentPage" [class.has-codes]="p.barcodes.length"
+                  [class.active]="i === currentPage" [class.has-codes]="p.barcodes.length || p.unread.length"
                   (click)="goToPage(i)">{{ p.page }}</button>
           <button type="button" (click)="goToPage(currentPage + 1)" [disabled]="currentPage === pages.length - 1">&rsaquo;</button>
         </div>
         <img class="uploaded-image" [class.pdf-page]="isPdf" [src]="'data:image/jpeg;base64,' + page.image" [alt]="'Page ' + page.page">
+      </div>
+      <div class="col-md-12 mb-3 legend" *ngIf="barcodes.length || unread.length">
+        <span class="legend-item"><span class="swatch swatch-red"></span> code lu (1D, QR)</span>
+        <span class="legend-item"><span class="swatch swatch-green"></span> code lu (DataMatrix)</span>
+        <span class="legend-item"><span class="swatch swatch-orange"></span> zone qui ressemble à un code-barres mais n'a pas pu être lue</span>
       </div>
       <div class="col-md-12 mb-4" *ngIf="barcodes.length">
         <h3>Detected Barcodes:</h3>
@@ -46,6 +51,16 @@
           <li *ngFor="let barcode of barcodes" (click)="goToPage(barcode.page - 1)" [class.clickable]="isPdf">
             <span class="page-badge" *ngIf="isPdf">Page {{ barcode.page }}</span>
             {{ barcode.type }}: {{ barcode.data }}
+          </li>
+        </ul>
+      </div>
+      <div class="col-md-12 mb-4" *ngIf="unread.length">
+        <h3>Zones illisibles :</h3>
+        <p class="unread-note">Ces zones ressemblent à un code-barres (encadrées en orange) mais leur contenu n'a pas pu être extrait : image trop floue, trop petite ou abîmée. Certaines peuvent être de fausses alertes.</p>
+        <ul>
+          <li *ngFor="let region of unread" (click)="goToPage(region.page - 1)" [class.clickable]="isPdf">
+            <span class="page-badge" *ngIf="isPdf">Page {{ region.page }}</span>
+            zone {{ region.coordinates.w }}×{{ region.coordinates.h }} px à ({{ region.coordinates.x }}, {{ region.coordinates.y }}) — confiance {{ (region.score * 100) | number:'1.0-0' }} %
           </li>
         </ul>
       </div>
