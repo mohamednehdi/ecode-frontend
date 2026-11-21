@@ -51,7 +51,7 @@ jobs:
       # (a token that can read it); otherwise the default token is enough.
       - uses: actions/checkout@v4
         with:
-          repository: mohamednehdi/Python-merged
+          repository: mohamednehdi/ecode-backend
           path: backend
           token: ${{ secrets.BACKEND_REPO_TOKEN || github.token }}
       - uses: actions/setup-python@v5

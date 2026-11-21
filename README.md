@@ -1,6 +1,6 @@
 # eCode : site web (Angular)
 
-[![CI](https://github.com/mohamednehdi/new-angular-barcode/actions/workflows/ci.yml/badge.svg)](https://github.com/mohamednehdi/new-angular-barcode/actions/workflows/ci.yml)
+[![CI](https://github.com/mohamednehdi/ecode-frontend/actions/workflows/ci.yml/badge.svg)](https://github.com/mohamednehdi/ecode-frontend/actions/workflows/ci.yml)
 
 Le site de la plateforme de localisation et d'extraction de codes-barres (projet de fin d'études, Progress Engineering). Il a trois parties :
 
@@ -8,7 +8,7 @@ Le site de la plateforme de localisation et d'extraction de codes-barres (projet
 - la **connexion de l'administrateur** (`/login`, avec réinitialisation du mot de passe) ;
 - le **back office** (`/dashboard`, administrateurs seulement) : clés API et statistiques d'utilisation.
 
-Le backend (Flask) est dans le dépôt [Python-merged](https://github.com/mohamednehdi/Python-merged). L'adresse du backend se règle à un seul
+Le backend (Flask) est dans le dépôt [ecode-backend](https://github.com/mohamednehdi/ecode-backend). L'adresse du backend se règle à un seul
 endroit : `src/app/api.config.ts`.
 
 ## Démarrage
