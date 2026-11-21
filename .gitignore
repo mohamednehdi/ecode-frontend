@@ -43,3 +43,8 @@ Thumbs.db
 
 # Local backups
 _backup_before_step1/
+
+# Tests
+/coverage
+/test-results
+/playwright-report
