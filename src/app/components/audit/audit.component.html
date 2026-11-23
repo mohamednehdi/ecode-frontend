@@ -1,0 +1,59 @@
+<div class="audit-page">
+  <div class="page-header">
+    <div>
+      <h2>Journal d'audit</h2>
+      <p class="subtitle">Qui a fait quoi, quand et depuis quelle adresse : connexions, échecs, et changements sur les clés API. Le journal ne peut être ni modifié ni effacé depuis le site. Aucun mot de passe ni aucune clé n'y est enregistré.</p>
+    </div>
+    <div class="filters">
+      <label>Période
+        <select class="form-select" [(ngModel)]="filters.days" (ngModelChange)="load()" name="days">
+          <option *ngFor="let p of periods" [ngValue]="p.days">{{ p.label }}</option>
+        </select>
+      </label>
+      <label>Événement
+        <select class="form-select" [(ngModel)]="filters.action" (ngModelChange)="load()" name="action">
+          <option value="">Tous</option>
+          <option *ngFor="let a of actions" [value]="a">{{ label(a) }}</option>
+        </select>
+      </label>
+      <label>Résultat
+        <select class="form-select" [(ngModel)]="filters.result" (ngModelChange)="load()" name="result">
+          <option value="">Tous</option>
+          <option value="true">Réussis</option>
+          <option value="false">Échecs</option>
+        </select>
+      </label>
+      <label>Recherche
+        <input class="form-control" [(ngModel)]="filters.q" (keyup.enter)="load()" (blur)="load()" name="q" placeholder="adresse e-mail ou clé">
+      </label>
+      <button type="button" class="btn btn-outline-secondary" (click)="exportCsv()" [disabled]="loading || !entries.length">Exporter en CSV</button>
+    </div>
+  </div>
+
+  <div class="form-error" *ngIf="errorMessage">{{ errorMessage }}</div>
+  <div class="loading" *ngIf="loading && !entries.length">Chargement…</div>
+  <div class="empty-state" *ngIf="!loading && !entries.length && !errorMessage">Aucune entrée sur cette période.</div>
+
+  <div class="card table-card" *ngIf="entries.length">
+    <div class="table-responsive">
+      <table class="table table-sm align-middle mb-0">
+        <thead>
+          <tr><th>Heure</th><th>Événement</th><th>Par</th><th>Cible</th><th>Détails</th><th>Adresse IP</th></tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let e of entries">
+            <td class="nowrap">{{ utc(e.time) | date:'dd/MM/yyyy HH:mm:ss' }}</td>
+            <td><span class="badge" [ngClass]="badge(e)">{{ label(e.action) }}</span></td>
+            <td>{{ e.actor_email ?? '–' }}</td>
+            <td>{{ e.target_name ?? '–' }}</td>
+            <td class="details">{{ detailsText(e) }}</td>
+            <td class="nowrap">{{ e.ip ?? '–' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="more" *ngIf="nextBeforeId !== null">
+      <button type="button" class="btn btn-outline-primary btn-sm" (click)="loadMore()" [disabled]="loading">Voir les entrées plus anciennes</button>
+    </div>
+  </div>
+</div>

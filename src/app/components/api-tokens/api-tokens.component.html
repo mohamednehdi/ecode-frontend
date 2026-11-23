@@ -9,8 +9,10 @@
 
   <!-- Shown once, right after a key is created -->
   <div class="key-banner" *ngIf="newKey">
-    <strong>Clé créée pour « {{ newKeyName }} ».</strong>
+    <strong>Clé {{ newKeyVerb }} pour « {{ newKeyName }} ».</strong>
     Copiez-la maintenant : elle ne sera plus jamais affichée.
+    <div class="old-key-note" *ngIf="oldKeyUntil">L'ancienne clé fonctionne encore jusqu'au <strong>{{ asUtc(oldKeyUntil) | date:'dd/MM/yyyy HH:mm' }}</strong> : mettez l'application à jour avant cette heure.</div>
+    <div class="old-key-note" *ngIf="!oldKeyUntil && newKeyVerb === 'renouvelée'">L'ancienne clé ne fonctionne plus.</div>
     <div class="key-row">
       <input class="form-control key-box" [value]="newKey" readonly (focus)="$any($event.target).select()">
       <button class="btn btn-dark" (click)="copyKey()">{{ copied ? 'Copiée ✓' : 'Copier' }}</button>
@@ -81,6 +83,24 @@
     </div>
   </form>
 
+  <!-- Key rotation -->
+  <div class="card token-form" *ngIf="rotating">
+    <h4>Renouveler la clé « {{ rotating.name }} »</h4>
+    <p>La clé reçoit un nouveau secret ; ses restrictions, ses quotas et son historique ne changent pas. Pendant le délai ci-dessous, l'ancien secret fonctionne encore, pour laisser à l'application le temps de passer au nouveau sans interruption.</p>
+    <div class="row g-3 align-items-end">
+      <div class="col-md-4">
+        <label class="form-label" for="rot-grace">Délai pendant lequel l'ancienne clé reste valable (heures)</label>
+        <input id="rot-grace" class="form-control" type="number" min="0" max="168" name="grace" [(ngModel)]="graceHours">
+        <div class="form-text">0 = l'ancienne clé s'arrête immédiatement (à choisir si elle a fuité). Maximum 168 (une semaine).</div>
+      </div>
+    </div>
+    <div class="form-error" *ngIf="rotateError">{{ rotateError }}</div>
+    <div class="mt-3">
+      <button type="button" class="btn btn-warning" (click)="confirmRotate()" [disabled]="rotatingBusy">Renouveler la clé</button>
+      <button type="button" class="btn btn-outline-secondary ms-2" (click)="closeRotate()">Annuler</button>
+    </div>
+  </div>
+
   <!-- List -->
   <div class="card table-card">
     <div class="p-4 text-center" *ngIf="loading">Chargement…</div>
@@ -106,7 +126,10 @@
         <tbody>
           <tr *ngFor="let token of tokens">
             <td><strong>{{ token.name }}</strong></td>
-            <td><code>{{ token.token_prefix }}…</code></td>
+            <td>
+              <code>{{ token.token_prefix }}…</code>
+              <div class="small text-muted" *ngIf="token.previous_key_valid_until">ancienne clé valable jusqu'au {{ asUtc(token.previous_key_valid_until) | date:'dd/MM HH:mm' }}</div>
+            </td>
             <td><span class="badge" [ngClass]="status(token).css">{{ status(token).label }}</span></td>
             <td>
               <span *ngIf="!token.allowed_ips.length" class="text-muted">Toutes</span>
@@ -131,6 +154,7 @@
             </td>
             <td class="text-end actions">
               <button class="btn btn-sm btn-outline-primary" (click)="openEdit(token)">Modifier</button>
+              <button class="btn btn-sm btn-outline-warning" (click)="openRotate(token)">Renouveler</button>
               <button class="btn btn-sm btn-outline-secondary" (click)="toggleActive(token)">
                 {{ token.is_active ? 'Désactiver' : 'Activer' }}
               </button>

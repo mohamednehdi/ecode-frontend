@@ -99,9 +99,13 @@
 }
 
 .actions {
-  white-space: nowrap;
+  /* four buttons no longer fit on one line next to the other columns: let them wrap onto a second line */
+  white-space: normal;
+  min-width: 190px;
 }
 
 .actions .btn {
-  margin-left: 4px;
+  margin: 0 0 4px 4px;
 }
+
+.old-key-note { margin-top: 8px; font-size: 14px; }

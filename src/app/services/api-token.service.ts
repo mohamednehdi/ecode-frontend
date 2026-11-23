@@ -16,6 +16,9 @@ export interface ApiToken {
   valid_until: string | null;
   created_at: string | null;
   last_used_at: string | null;
+  rotated_at: string | null;
+  /** While the previous key still works after a rotation: until when (UTC, no zone). */
+  previous_key_valid_until: string | null;
   usage_hour: number;
   usage_month: number;
 }
@@ -54,6 +57,11 @@ export class ApiTokenService {
 
   update(id: number, payload: Partial<ApiTokenPayload>): Observable<ApiToken> {
     return this.http.put<ApiToken>(`${this.url}/api-tokens/${id}`, payload);
+  }
+
+  /** Gives the key a new secret; the old one keeps working for `graceHours` (0 = stops at once). The new key is in `api_key`, shown once. */
+  rotate(id: number, graceHours: number): Observable<{ token: ApiToken; api_key: string }> {
+    return this.http.post<{ token: ApiToken; api_key: string }>(`${this.url}/api-tokens/${id}/rotate`, { grace_hours: graceHours });
   }
 
   delete(id: number): Observable<any> {

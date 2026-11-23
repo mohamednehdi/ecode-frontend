@@ -34,6 +34,13 @@ describe('ApiTokenService', () => {
     expect(req.request.body).toEqual(payload);
   });
 
+  it('rotates a key with the grace period in hours', () => {
+    service.rotate(7, 12).subscribe();
+    const req = http.expectOne(`${API_URL}/admin/api-tokens/7/rotate`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({ grace_hours: 12 });
+  });
+
   it('updates and deletes a key by its id', () => {
     service.update(7, { is_active: false }).subscribe();
     const put = http.expectOne(`${API_URL}/admin/api-tokens/7`);

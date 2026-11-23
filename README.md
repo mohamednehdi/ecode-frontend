@@ -26,15 +26,15 @@ ng serve                # http://localhost:4200  (le backend doit tourner sur ht
 | `npm run test:ci` | les mêmes, une seule fois, sans fenêtre, avec la couverture (ce que lance l'intégration continue) |
 | `npm run e2e` | test de bout en bout (Playwright) : un vrai navigateur sur le vrai site et le vrai backend |
 
-**Tests unitaires : 86**, exécutés dans un ordre aléatoire. Couverture mesurée le 20/11/2026 : **95,8 % des lignes**, 95,0 % des instructions,
-92,9 % des fonctions, 73,6 % des branches (20 fichiers ; les fichiers de modules et de routage, simples déclarations, n'en font pas partie).
+**Tests unitaires : 107**, exécutés dans un ordre aléatoire. Couverture mesurée le 23/11/2026 : **96,1 % des lignes**, 95,0 % des instructions,
+92,9 % des fonctions, 75,4 % des branches (22 fichiers ; les fichiers de modules et de routage, simples déclarations, n'en font pas partie).
 Ils couvrent : l'authentification et la garde d'accès administrateur, l'intercepteur HTTP (le jeton n'est jamais envoyé à un autre site),
-les formulaires (connexion, réinitialisation du mot de passe en trois étapes, clés API), la page publique, la page de statistiques et
+les formulaires (connexion avec message de verrouillage, réinitialisation du mot de passe en trois étapes, clés API et leur renouvellement), la page publique, la page de statistiques, le journal d'audit et
 les calculs d'axes des graphiques.
 
 **Test de bout en bout** (`e2e/main-flow.spec.ts`) : dépôt d'une image avec un code QR sur la page publique ; refus d'un mauvais type de
 fichier ; accès refusé à un visiteur ; mauvais mot de passe ; puis tout le parcours de l'administrateur : connexion, création d'une clé,
-appel du service web avec cette clé, apparition de la requête dans les statistiques, désactivation de la clé (le service la refuse) et suppression.
+appel du service web avec cette clé, renouvellement de la clé (l'ancienne est refusée, la nouvelle marche), apparition de la requête dans les statistiques et des actions dans le journal d'audit, désactivation de la clé (le service la refuse) et suppression. Un test vérifie aussi le verrouillage après cinq mauvais mots de passe.
 Il suppose un backend et un site en marche et lit `BASE_URL`, `API_URL`, `ADMIN_EMAIL`, `ADMIN_PASSWORD` (voir `playwright.config.ts`).
 
 ## Intégration continue

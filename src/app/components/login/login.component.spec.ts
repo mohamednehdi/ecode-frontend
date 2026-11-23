@@ -48,6 +48,20 @@ describe('LoginComponent', () => {
     expect(component.errorMessage).toBe('Email ou mot de passe incorrect.');
   });
 
+  it('shows the lockout message of the server after too many failed attempts (429)', () => {
+    submit('a@b.com', 'wrong');
+    http.expectOne(`${API_URL}/auth/login`).flush(
+      { error: 'x', message: 'Trop de tentatives de connexion. Réessayez dans 12 minute(s).', retry_after: 700 },
+      { status: 429, statusText: 'Too Many Requests' });
+    expect(component.errorMessage).toBe('Trop de tentatives de connexion. Réessayez dans 12 minute(s).');
+  });
+
+  it('has a default lockout message when the server sends none', () => {
+    submit('a@b.com', 'wrong');
+    http.expectOne(`${API_URL}/auth/login`).flush({}, { status: 429, statusText: 'Too Many Requests' });
+    expect(component.errorMessage).toBe('Trop de tentatives de connexion. Réessayez plus tard.');
+  });
+
   it('says the back office is for administrators when a normal account logs in (403)', () => {
     submit('a@b.com', 'goodpassword');
     http.expectOne(`${API_URL}/auth/login`).flush({}, { status: 403, statusText: 'Forbidden' });

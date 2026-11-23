@@ -42,7 +42,17 @@ test.describe('back office (administrator)', () => {
     await expect(page).toHaveURL(/\/login$/);
   });
 
-  test('the whole story: log in, create a key, use it, see the request in the statistics, disable it', async ({ page, request }) => {
+  test('too many wrong passwords lock the address, and the lock says for how long', async ({ page }) => {
+    const email = `lock-${Date.now()}@example.test`;                       // an address nobody owns: the lock treats it like a real one
+    for (let attempt = 1; attempt <= 5; attempt++) {
+      await logIn(page, email, `wrong-${attempt}`);
+      await expect(page.getByText('Email ou mot de passe incorrect.')).toBeVisible();
+    }
+    await logIn(page, email, 'wrong-6');
+    await expect(page.getByText(/Trop de tentatives de connexion\. Réessayez dans \d+ minute/)).toBeVisible();
+  });
+
+  test('the whole story: log in, create a key, rotate it, use it, find everything in the statistics and the audit log, disable it', async ({ page, request }) => {
     test.skip(!ADMIN_EMAIL || !ADMIN_PASSWORD, 'ADMIN_EMAIL and ADMIN_PASSWORD are not set');
     const keyName = `E2E key ${Date.now()}`;
 
@@ -67,6 +77,20 @@ test.describe('back office (administrator)', () => {
     const body = await answer.json();
     expect(body.barcodes.map((b: { data: string }) => b.data)).toContain('HELLO-E2E');
 
+    // 3b. the administrator rotates the key with no grace period (the old secret leaked): the old key dies, the new one works
+    await page.getByRole('link', { name: 'API Tokens' }).click();
+    await page.getByRole('row', { name: new RegExp(keyName) }).getByRole('button', { name: 'Renouveler' }).click();
+    await page.locator('#rot-grace').fill('0');
+    await page.getByRole('button', { name: 'Renouveler la clé' }).click();
+    await expect(page.getByText('L\'ancienne clé ne fonctionne plus.')).toBeVisible();
+    const newKey = await page.locator('.key-box').inputValue();
+    expect(newKey).toMatch(/^ecode_/);
+    expect(newKey).not.toBe(apiKey);
+    await page.getByRole('button', { name: "J'ai copié la clé" }).click();
+    const upload = () => ({ file: { name: 'qr.png', mimeType: 'image/png', buffer: readFileSync(QR_IMAGE) } });
+    expect((await request.post(`${API_URL}/api/v1/extract`, { headers: { 'X-API-Key': apiKey }, multipart: upload() })).status()).toBe(401);
+    expect((await request.post(`${API_URL}/api/v1/extract`, { headers: { 'X-API-Key': newKey }, multipart: upload() })).status()).toBe(200);
+
     // 4. the request shows up in the statistics page, with its key and its result
     await page.getByRole('link', { name: 'Statistics' }).click();
     await expect(page).toHaveURL(/\/dashboard\/statistics$/);
@@ -74,13 +98,21 @@ test.describe('back office (administrator)', () => {
     await expect(row).toBeVisible();
     await expect(row).toContainText('200');
 
+    // 4b. every sensitive action is in the audit log, with who did it
+    await page.getByRole('link', { name: 'Audit log' }).click();
+    await expect(page).toHaveURL(/\/dashboard\/audit$/);
+    for (const event of ['Clé créée', 'Clé renouvelée', 'Connexion']) {
+      await expect(page.getByRole('row', { name: new RegExp(event) }).first()).toBeVisible();
+    }
+    await expect(page.getByRole('row', { name: new RegExp(`Clé renouvelée.*${ADMIN_EMAIL}.*${keyName}`) })).toBeVisible();
+
     // 5. the administrator disables the key: the service now refuses it
     await page.getByRole('link', { name: 'API Tokens' }).click();
     const keyRow = page.getByRole('row', { name: new RegExp(keyName) });
     await keyRow.getByRole('button', { name: 'Désactiver' }).click();
     await expect(keyRow.getByRole('button', { name: 'Activer' })).toBeVisible();
     const refused = await request.post(`${API_URL}/api/v1/extract`, {
-      headers: { 'X-API-Key': apiKey },
+      headers: { 'X-API-Key': newKey },
       multipart: { file: { name: 'qr.png', mimeType: 'image/png', buffer: readFileSync(QR_IMAGE) } },
     });
     expect(refused.status()).toBe(403);

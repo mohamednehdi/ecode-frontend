@@ -46,6 +46,9 @@ export class LoginComponent {
       error: error => {
         if (error.status === 401) {
           this.errorMessage = 'Email ou mot de passe incorrect.';
+        } else if (error.status === 429) {
+          // too many failed attempts: the server says for how long
+          this.errorMessage = error.error?.message || 'Trop de tentatives de connexion. Réessayez plus tard.';
         } else if (error.status === 403) {
           this.errorMessage = error.error?.message || 'Accès réservé aux administrateurs.';
         } else {

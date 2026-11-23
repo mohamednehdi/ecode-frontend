@@ -35,9 +35,16 @@ export class ApiTokensComponent implements OnInit {
   editingId: number | null = null;   // null = creating a new token
   form: TokenForm = emptyForm();
 
-  newKey = '';                       // full key, shown once after creation
+  newKey = '';                       // full key, shown once after creation or rotation
   newKeyName = '';
+  newKeyVerb = 'créée';             // 'créée' or 'renouvelée'
+  oldKeyUntil: string | null = null; // after a rotation: until when the previous key still works (UTC, no zone)
   copied = false;
+
+  rotating: ApiToken | null = null;  // the key whose rotation panel is open
+  graceHours = 24;
+  rotateError = '';
+  rotatingBusy = false;
 
   constructor(private api: ApiTokenService) { }
 
@@ -122,6 +129,8 @@ export class ApiTokensComponent implements OnInit {
           this.showForm = false;
           this.newKey = res.api_key;
           this.newKeyName = res.token.name;
+          this.newKeyVerb = 'créée';
+          this.oldKeyUntil = null;
           this.copied = false;
           this.load();
         },
@@ -154,6 +163,45 @@ export class ApiTokensComponent implements OnInit {
     this.api.delete(token.id).subscribe({
       next: () => this.tokens = this.tokens.filter(t => t.id !== token.id),
       error: err => this.errorMessage = err.error?.error || 'Erreur lors de la suppression.'
+    });
+  }
+
+  // ---- key rotation ----
+
+  openRotate(token: ApiToken): void {
+    this.rotating = token;
+    this.graceHours = 24;
+    this.rotateError = '';
+  }
+
+  closeRotate(): void {
+    this.rotating = null;
+  }
+
+  confirmRotate(): void {
+    if (!this.rotating) return;
+    const hours = Number(this.graceHours);
+    if (!Number.isFinite(hours) || hours < 0 || hours > 168) {
+      this.rotateError = 'Le délai doit être compris entre 0 et 168 heures.';
+      return;
+    }
+    this.rotatingBusy = true;
+    this.rotateError = '';
+    this.api.rotate(this.rotating.id, hours).subscribe({
+      next: res => {
+        this.rotatingBusy = false;
+        this.rotating = null;
+        this.newKey = res.api_key;
+        this.newKeyName = res.token.name;
+        this.newKeyVerb = 'renouvelée';
+        this.oldKeyUntil = res.token.previous_key_valid_until;
+        this.copied = false;
+        this.load();
+      },
+      error: err => {
+        this.rotatingBusy = false;
+        this.rotateError = err.error?.error || 'Erreur lors du renouvellement.';
+      }
     });
   }
 

@@ -16,6 +16,7 @@ import { VerifyCodeComponent } from './components/verify-code/verify-code.compon
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 import { ApiTokensComponent } from './components/api-tokens/api-tokens.component';
 import { StatisticsComponent } from './components/statistics/statistics.component';
+import { AuditComponent } from './components/audit/audit.component';
 import { BarChartComponent } from './components/charts/bar-chart.component';
 import { LineChartComponent } from './components/charts/line-chart.component';
 import { HBarChartComponent } from './components/charts/hbar-chart.component';
@@ -39,6 +40,7 @@ import { faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
     ResetPasswordComponent,
     ApiTokensComponent,
     StatisticsComponent,
+    AuditComponent,
     BarChartComponent,
     LineChartComponent,
     HBarChartComponent
